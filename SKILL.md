@@ -15,12 +15,14 @@ Run this as a confirmation-gated workflow. Do not edit, package, render, or expo
 
 Required companion skills:
 
-- Use the installed `$video-use` skill for video analysis, transcription, cutting, SRT, and packaging-plan design. If `$video-use` is not installed or cannot be loaded, bootstrap it automatically before continuing.
+- Use the installed `$video-use` skill for video analysis, cutting, SRT handling, and packaging-plan design. If `$video-use` is not installed or cannot be loaded, bootstrap it automatically before continuing.
+- Use Whisper-compatible local transcription for transcript and SRT generation. Do not use ElevenLabs Scribe in this workflow.
 - Use Remotion + GSAP for the animation implementation after the user approves the packaging design.
 
 必要关联技能：
 
-- 使用已安装的 `$video-use` skill 做视频分析、转写、剪辑、SRT 和包装方案设计。如果 `$video-use` 未安装或无法加载，先自动自举安装后再继续。
+- 使用已安装的 `$video-use` skill 做视频分析、剪辑、SRT 处理和包装方案设计。如果 `$video-use` 未安装或无法加载，先自动自举安装后再继续。
+- 转写和 SRT 生成使用 Whisper 兼容的本地转写方案。本工作流不使用 ElevenLabs Scribe。
 - 用户确认包装设计后，用 Remotion + GSAP 实现动画包装。
 
 ## Dependency Bootstrap / 依赖自举
@@ -37,17 +39,37 @@ After installation:
 
 安装后：
 
-- Read the installed `video-use/install.md` and complete only the required first-use setup for the current task.
-- Install or request only hard requirements that cannot be skipped, such as `ffmpeg`, `ffprobe`, Python dependencies, and the ElevenLabs API key when transcription is needed.
-- Do not echo or log API keys. Never commit `.env`.
+- Read the installed `video-use/install.md` only for general setup, but skip its ElevenLabs/Scribe API-key step for this workflow.
+- Install or request only hard requirements that cannot be skipped, such as `ffmpeg`, `ffprobe`, Python dependencies, and a Whisper-compatible transcription tool.
+- Do not ask for, echo, store, or log ElevenLabs API keys. Never commit `.env`.
 - If the current Codex session cannot dynamically load the newly installed skill, read the installed `video-use/SKILL.md` directly for this session and tell the user to restart Codex after the current workflow to pick up the skill normally.
-- If GitHub access, network, package manager permissions, or API-key setup fails, explain the exact missing requirement and ask the user only for that one unblocker.
+- If GitHub access, network, package manager permissions, or Whisper setup fails, explain the exact missing requirement and ask the user only for that one unblocker.
 
-- 读取已安装的 `video-use/install.md`，只完成当前任务必需的首次配置。
-- 只安装或索取不能跳过的硬依赖，例如 `ffmpeg`、`ffprobe`、Python 依赖，以及需要转写时的 ElevenLabs API key。
-- 不回显、不记录 API key；不要提交 `.env`。
+- 读取已安装的 `video-use/install.md` 时，只参考通用安装步骤；本工作流跳过 ElevenLabs/Scribe API key 配置。
+- 只安装或索取不能跳过的硬依赖，例如 `ffmpeg`、`ffprobe`、Python 依赖和 Whisper 兼容转写工具。
+- 不索取、不回显、不保存、不记录 ElevenLabs API key；不要提交 `.env`。
 - 如果当前 Codex 会话不能动态加载新安装的 skill，本轮直接读取已安装的 `video-use/SKILL.md` 使用，并提醒用户当前流程结束后重启 Codex，以便后续正常识别。
-- 如果 GitHub 访问、网络、包管理器权限或 API key 配置失败，只说明当前缺少的具体条件，并只向用户索取这一项阻塞信息。
+- 如果 GitHub 访问、网络、包管理器权限或 Whisper 安装失败，只说明当前缺少的具体条件，并只向用户索取这一项阻塞信息。
+
+## Transcription Rule / 转写规则
+
+All transcription in this workflow must use Whisper or a Whisper-compatible local tool. Do not ask for `ELEVENLABS_API_KEY`, do not configure ElevenLabs, and do not call Scribe-only `video-use` helpers when they require an API key.
+
+本工作流所有转写必须使用 Whisper 或 Whisper 兼容的本地工具。不要索取 `ELEVENLABS_API_KEY`，不要配置 ElevenLabs，也不要调用需要 API key 的 Scribe 专用 `video-use` helper。
+
+Preferred order:
+
+优先顺序：
+
+1. Use an existing `whisper`, `faster-whisper`, `mlx-whisper`, or equivalent local Whisper command if available.
+2. If no Whisper tool is available, install a Whisper-compatible option locally for the project environment, then transcribe.
+3. Output separate SRT by default. Do not burn subtitles into the video unless the user explicitly asks.
+4. For packaging design, use Whisper transcript text and timestamps as the timing source. If word-level timestamps are unavailable, use segment timestamps plus silence detection to avoid obvious cut or animation timing errors.
+
+1. 如果环境里已有 `whisper`、`faster-whisper`、`mlx-whisper` 或等价本地 Whisper 命令，优先使用。
+2. 如果没有 Whisper 工具，在当前项目环境中安装 Whisper 兼容方案后再转写。
+3. 默认输出独立 SRT；除非用户明确要求，否则不烧录字幕。
+4. 包装设计以 Whisper 转写文本和时间戳作为时间依据。如果没有词级时间戳，用分段时间戳配合静默检测，避免明显的剪辑或动效对齐错误。
 
 ## Workflow / 流程
 
