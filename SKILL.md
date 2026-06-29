@@ -163,6 +163,33 @@ Fine-cut output requirements:
 4. 保留剪辑决策文件，例如 `edl.json`，以及 `$video-use` 生成的项目记录。
 5. 渲染后跑一次静默检测，检查有没有明显错误、长空白或异常等待；发现明确问题先修正再进入后续步骤。
 
+#### Post-Edit Handoff / 精剪后交接
+
+After a fine-cut render passes verification, do not stop at "fine cut complete." Reply with the edited file path, the key verification results, and the next workflow action.
+
+精剪渲染并通过检查后，不要停在“精剪完成”。必须回复剪辑后文件路径、关键检查结果，以及下一步流程动作。
+
+Use this handoff shape:
+
+使用下面这种交接格式：
+
+```text
+精剪完成，未覆盖原片。
+输出文件：<edited-video-path>
+检查结果：<duration / resolution / audio / silence check summary>
+
+下一步进入视觉包装流程：
+1. 我会基于这条精剪视频生成独立 SRT，默认不烧录字幕。
+2. 接下来需要确认包装风格：使用自定义风格 Markdown，还是使用默认 DESIGN.md / 默认风格？
+3. 风格确认后，我会用 video-use 生成包装动效设计稿，只出方案，不渲染。
+
+请确认：继续做视觉包装吗？如果继续，请选择“自定义风格”或“默认风格”。
+```
+
+If the user already selected a style earlier, skip the style question and ask for approval to generate the packaging motion design draft from the edited video, transcript/SRT, EDL, selected style, and keyword-animation reference.
+
+如果用户前面已经确认过风格，不要重复询问风格；直接询问是否基于剪辑后视频、转写/SRT、EDL、已选风格和关键词动效参考生成包装动效设计稿。
+
 ### 3. Ask About Custom Style / 询问是否自定义风格
 
 After receiving the edited video, ask whether the user wants a custom visual style.
@@ -328,6 +355,7 @@ Never skip these gates:
 - Do not render during the planning or Studio-preview stage.
 - Do not burn subtitles by default.
 - Do not generate whole-video playback progress bars as decorative HUD.
+- Do not stop after fine-cut verification without telling the user the next packaging action.
 - Do not silently switch from Remotion + GSAP to another tool when setup is inconvenient.
 - Do not overwrite the original or edited source video.
 
@@ -336,5 +364,6 @@ Never skip these gates:
 - 不要在方案阶段或 Studio 预览阶段渲染。
 - 默认不要烧录字幕。
 - 不要把整条视频播放进度条当作装饰性 HUD 生成。
+- 不要在精剪检查完成后停住而不告诉用户下一步包装动作。
 - 不要因为环境麻烦就偷偷换掉 Remotion + GSAP。
 - 不要覆盖原始视频或剪辑后源视频。
