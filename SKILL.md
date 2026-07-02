@@ -1,6 +1,6 @@
 ---
 name: video-auto-edit
-description: Use when the user wants a reusable workflow for video editing decisions, subtitle-aligned visual packaging, keyword HUD/card animations, Remotion Studio preview, and final export using Remotion plus GSAP.
+description: Use when the user wants a reusable workflow for video editing decisions, subtitle-aligned visual packaging, keyword card animations, Remotion Studio preview, and final export using Remotion plus GSAP.
 ---
 
 # video-auto-edit
@@ -245,18 +245,18 @@ After receiving the edited video, ask whether the user wants a custom visual sty
 拿到剪辑好视频后，询问用户是否需要自定义视觉风格。
 
 - If yes: ask the user to upload or point to either a style Markdown file or one or more reference images.
-- If no: use the project/default `DESIGN.md`. If no usable `DESIGN.md` exists, read `references/default-design.md` from this skill and use `Neon Analytics HUD` as the default visual style brief.
+- If no: use the project/default `DESIGN.md`. If no usable `DESIGN.md` exists, read `references/default-design.md` from this skill and use `Remotion Native Material Cards` as the default visual style brief.
 
 - 如果需要：让用户上传或指定风格 Markdown 文件，或上传一张/多张参考图片。
-- 如果不需要：使用项目或默认的 `DESIGN.md`。如果没有可用的 `DESIGN.md`，读取本 skill 的 `references/default-design.md`，并使用 `Neon Analytics HUD / 霓虹数据分析 HUD` 作为默认视觉风格简报。
+- 如果不需要：使用项目或默认的 `DESIGN.md`。如果没有可用的 `DESIGN.md`，读取本 skill 的 `references/default-design.md`，并使用 `Remotion Native Material Cards / Remotion 原生材质卡片` 作为默认视觉风格简报。
 
 Read the selected style source before designing packaging. Carry forward hard constraints such as safe zones, colors, typography, and forbidden transitions.
 
 设计包装前必须先读取所选风格来源。要继承安全区、颜色、字体、禁用转场等硬约束。
 
-If the user provides reference image(s), inspect the image(s) first and extract a concise style brief before packaging design. The extracted brief must cover: layout pattern, card shape and border style, typography feel, color palette, glow/shadow treatment, icon/HUD elements, density, safe-zone implications, motion assumptions, and what not to copy if it would block faces, mouths, or subtitles.
+If the user provides reference image(s), inspect the image(s) first and extract a concise style brief before packaging design. The extracted brief must cover: layout pattern, card shape and border style, typography feel, color palette, glow/shadow treatment, icon elements, density, safe-zone implications, motion assumptions, and what not to copy if it would block faces, mouths, or subtitles.
 
-如果用户提供参考图片，必须先观察图片并提取精简风格 brief，再进入包装设计。提取出的 brief 必须包含：布局模式、卡片形状和描边样式、字体气质、配色、发光/阴影处理、图标/HUD 元素、信息密度、安全区影响、动效假设，以及哪些元素如果会挡脸、挡嘴或挡字幕就不要照搬。
+如果用户提供参考图片，必须先观察图片并提取精简风格 brief，再进入包装设计。提取出的 brief 必须包含：布局模式、卡片形状和描边样式、字体气质、配色、发光/阴影处理、图标元素、信息密度、安全区影响、动效假设，以及哪些元素如果会挡脸、挡嘴或挡字幕就不要照搬。
 
 After reading a style Markdown or extracting a brief from reference image(s), pass the hard constraints and visual direction into `$video-use` as part of the packaging-design brief. If no stronger custom style is provided, pass `references/card-style-library.md` as the unified default card-polish and material-quality reference. The packaging plan must be designed by `$video-use` from the edited video, transcript text, EDL, SRT/timestamps, selected style Markdown or extracted image-style brief, card style library, and keyword-animation reference together. The main agent must not bypass `$video-use` and draft the packaging plan by itself.
 
@@ -276,9 +276,9 @@ The main agent's role in this step is to prepare inputs for `$video-use`, includ
 
 此步骤中，主 Agent 的职责是为 `$video-use` 准备输入，包括包装时间包、已选择的风格 Markdown 或图片风格提取 brief、`references/visual-quality-system.md`，以及关键词动效参考。请求 `$video-use` 出方案前，必须确认时间包存在，并且指向最终剪辑视频。包装动效设计稿必须由 `$video-use` 返回。主 Agent 可以整理或转述该设计稿给用户，但不得用自己另写的包装方案替代它。
 
-Before drafting the packaging plan, read `references/visual-quality-system.md`, `references/card-style-library.md`, and `references/keyword-animation-effects.md`. Use the visual quality system for typography, components, hierarchy, color, safety, and QA constraints; use the unified card style library to choose from all seven active card styles. Default to Neon Analytics HUD unless the user provides another style or the subtitle meaning clearly benefits from a secondary style. Available styles: Neon Analytics HUD, Codex Agent Packaging HUD, Holographic Glass HUD, Kinetic Sticker Cards, Isometric Workflow Modules, Soft Clay Neumorphic Cards, or Glitch Terminal Cards. Use the keyword animation library to choose or combine suitable keyword, card, mouse, collision, drag, snapping, checklist, and loading effects according to subtitle meaning.
+Before drafting the packaging plan, read `references/visual-quality-system.md`, `references/card-style-library.md`, and `references/keyword-animation-effects.md`. The default built-in style is `Remotion Native Material Cards`. Optional built-in styles include `Holographic Glass HUD`, `Frosted Glass Packaging`, and `Reference HUD Pattern`; use them only when the user explicitly requests one, provides a matching reference, or the approved design draft names that style. A user-provided Markdown style or reference image may still be used as an explicit external custom style for that task.
 
-设计包装方案前，先读取 `references/visual-quality-system.md`、`references/card-style-library.md` 和 `references/keyword-animation-effects.md`。视觉质量系统用于约束字体、组件、层级、颜色、安全区和验收标准；统一卡片风格库用于从全部 7 种已启用卡片风格中选择。除非用户提供其它风格，或字幕语义明显适合辅助风格，否则默认使用 `Neon Analytics HUD / 霓虹数据分析 HUD`。可用风格：霓虹数据分析 HUD、Codex Agent 分段包装 HUD、全息玻璃 HUD、动感贴纸卡、2.5D 工作流模块、柔和黏土拟物卡、故障终端卡；关键词动效库用于根据字幕语义选择或组合合适的关键词、卡片、鼠标、碰撞、拖拽、吸附、勾选、加载等动效。
+设计包装方案前，先读取 `references/visual-quality-system.md`、`references/card-style-library.md` 和 `references/keyword-animation-effects.md`。默认内置风格是 `Remotion Native Material Cards / Remotion 原生材质卡片`。可选内置风格包括 `Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装`、`Reference HUD Pattern / 参考 HUD 信息图`；只有在用户明确要求、提供匹配参考，或已确认设计稿指定时才使用。用户提供的风格 Markdown 或参考图片仍可作为该任务的外部自定义风格使用。
 
 The design draft must include, for every animation segment:
 
@@ -335,10 +335,10 @@ The packaging motion design draft must use this exact Markdown block format. Do 
 动效：两枚模式芯片从标题卡下方 stagger 弹出，先显示空芯片，再填入 Max / Ultra 轮廓。
 运动：ease-out，芯片间 4 帧错峰，边框青色脉冲一次。
 布局：左侧中上，保留下方字幕区。
-卡片材质：每枚芯片使用磨砂玻璃底、1px 蓝色霓虹描边、内侧暗角和图标弱发光，禁止纯色扁平矩形。
+卡片材质：每枚芯片使用半哑光深色底、1px 语义色渐变描边、内侧暗角和图标弱发光，禁止纯色扁平矩形。
 已应用的风格约束：引用所选风格 Markdown 或图片风格提取 brief 中实际采用的约束。
 字体：Inter ExtraBold / PingFang SC Semibold，28-36px，line-height 1.18。
-组件：PremiumHudStatusCard / KeywordChip。
+组件：RemotionModularCard / KeywordChip。
 质量风险：两枚芯片不要同时遮挡人物手势；边框发光不能过曝。
 ```
 
@@ -365,11 +365,11 @@ Implementation requirements:
 - Use the approved packaging plan as the source of truth.
 - Drive overlay entrances, highlights, bounces, clicks, card collisions, and exits from the approved subtitle keyword cue times. Convert cue seconds to Remotion frames and use those frames as animation anchors.
 - Use `references/visual-quality-system.md` as the implementation quality bar for typography, components, hierarchy, spacing, and motion polish.
-- Use `references/card-style-library.md` as the unified implementation reference for card material, semantic borders, icon containers, glow restraint, and all seven active card styles. The base default is `Neon Analytics HUD`; the other six styles are optional secondary styles.
+- Use `references/card-style-library.md` as the unified implementation reference for the selected built-in or custom style. Default to `Remotion Native Material Cards`; use optional built-in styles only when explicitly selected in the approved plan.
 - Keep video and audio aligned to the edited video.
 - Keep overlays outside face/mouth and subtitle-safe zones unless the approved plan explicitly says otherwise.
 - Explicitly set `fontFamily`, weight, size, line height, and fallback for every text component; do not rely on browser default fonts.
-- Do not add transition flashes or scan wipes if the selected style forbids them.
+- Do not add transition flashes, scan wipes, full-screen frames, or dashboard shells if the selected style forbids them.
 - Do not add global top/bottom video progress bars. Progress bars are allowed only inside task cards or loading panels when they represent content-specific progress.
 - Do not render or export at this stage.
 
@@ -378,11 +378,11 @@ Implementation requirements:
 - 以用户确认的包装方案为唯一实现依据。
 - 按已确认方案中的字幕关键词落点驱动包装元素入场、高亮、弹跳、点击、卡片碰撞和退场。将 cue 秒数转换成 Remotion 帧，并以这些帧作为动画锚点。
 - 使用 `references/visual-quality-system.md` 作为字体、组件、层级、间距和动效质感的实现质量标准。
-- 使用 `references/card-style-library.md` 作为统一实现参考，约束卡片材质、语义描边、图标容器、克制发光和全部 7 种已启用卡片风格。基础默认风格是 `Neon Analytics HUD / 霓虹数据分析 HUD`，其它 6 种作为可选辅助风格。
+- 使用 `references/card-style-library.md` 作为已选内置或自定义风格的统一实现参考。默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`；只有在确认方案明确选择时才使用可选内置风格。
 - 保持视频与音频和剪辑后视频对齐。
 - 除非方案明确允许，否则包装元素必须避开脸部、嘴部和字幕安全区。
 - 每个文字组件都必须显式设置 `fontFamily`、字重、字号、行高和 fallback；不要依赖浏览器默认字体。
-- 如果风格文件禁止转场闪烁或扫描光效，就不得添加。
+- 如果风格文件禁止转场闪烁、扫描光效、全屏框或仪表盘外壳，就不得添加。
 - 不要添加顶部或底部的整条视频全局进度条。只有表示内容内部状态的任务卡片进度条或加载面板进度条可以使用。
 - 此阶段不渲染、不导出。
 
@@ -463,13 +463,13 @@ Never skip these gates:
 - Do not let cards, terminals, titles, or transition effects cover the speaker's face or mouth.
 - Do not render during the planning or Studio-preview stage.
 - Do not burn subtitles by default.
-- Do not generate whole-video playback progress bars as decorative HUD.
+- Do not generate whole-video playback progress bars as decorative elements.
 - Do not stop after fine-cut verification without telling the user the next packaging action.
 - Do not skip the packaging timing bundle after fine-cut or user-provided edited-video handoff.
 - Do not treat user-provided SRT as word-level keyword timing unless it is accompanied by verified word-level timestamps.
 - Do not trigger every animation from generic scene starts, equal time slices, or hand-picked decorative timings; use subtitle keyword cue points.
 - Do not generate flat single-layer cards. Cards need glass material, gradient, semantic border, inner/outer shadows, icon container, and explicit typography hierarchy.
-- When using Kinetic Sticker Cards, do not generate top or corner square badges; keep the main icon only in the circular icon area.
+- Do not use unselected optional styles. Default to `Remotion Native Material Cards`; use `Holographic Glass HUD`, `Frosted Glass Packaging`, or `Reference HUD Pattern` only when explicitly selected.
 - Do not ignore reference image(s) when the user provides them as the custom style source; extract a style brief first.
 - Do not silently switch from Remotion + GSAP to another tool when setup is inconvenient.
 - Do not overwrite the original or edited source video.
@@ -478,13 +478,13 @@ Never skip these gates:
 - 不要让卡片、终端框、标题或转场效果挡住人物脸部和嘴部。
 - 不要在方案阶段或 Studio 预览阶段渲染。
 - 默认不要烧录字幕。
-- 不要把整条视频播放进度条当作装饰性 HUD 生成。
+- 不要把整条视频播放进度条当作装饰元素生成。
 - 不要在精剪检查完成后停住而不告诉用户下一步包装动作。
 - 精剪或用户提供成片交接后，不要跳过包装时间包。
 - 不要把用户提供的 SRT 当作词级关键词时间，除非同时有已验证的词级时间戳。
 - 不要用泛泛的场景开始时间、均分时间片或手选装饰时间触发所有动效；必须使用字幕关键词落点。
 - 不要生成单层扁平卡片。卡片需要玻璃材质、渐变、语义描边、内外阴影、图标容器和明确字体层级。
-- 使用动感贴纸卡时，不要生成顶部/角落编号小方块或状态角标；主图标只保留在圆形图标区。
+- 不要混用未被选择的可选内置风格。默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`；只有明确选择时才使用 `Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装` 或 `Reference HUD Pattern / 参考 HUD 信息图`。
 - 用户提供参考图片作为自定义风格来源时，不要忽略图片；必须先提取风格 brief。
 - 不要因为环境麻烦就偷偷换掉 Remotion + GSAP。
 - 不要覆盖原始视频或剪辑后源视频。

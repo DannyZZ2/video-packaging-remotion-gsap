@@ -44,7 +44,7 @@ git clone https://github.com/DannyZZ2/video-auto-edit.git ~/.codex/skills/video-
 4. If editing is not needed, ask for the already-edited video.
 5. Generate or normalize SRT, transcript, timestamp, edit-decision, and keyword-cue data into one packaging timing bundle.
 6. Ask whether the user wants a custom style Markdown or reference image.
-7. If no custom style is provided, use the default `Neon Analytics HUD` style.
+7. If no custom style is provided, use the default `Remotion Native Material Cards` style. Optional built-in styles are available when explicitly selected: `Holographic Glass HUD`, `Frosted Glass Packaging`, and `Reference HUD Pattern`.
 8. Use `$video-use` to generate a packaging motion design draft from the final video, timing bundle, selected style, card style library, and keyword animation library.
 9. Wait for user confirmation.
 10. Implement the approved design with Remotion + GSAP.
@@ -57,7 +57,7 @@ git clone https://github.com/DannyZZ2/video-auto-edit.git ~/.codex/skills/video-
 4. 如果不需要剪辑，让用户提供已经剪辑好的视频。
 5. 将 SRT、转写文本、时间戳、剪辑决策和关键词 cue 统一整理为包装时间包。
 6. 询问是否使用自定义风格 Markdown 或参考图片。
-7. 如果没有自定义风格，默认使用 `Neon Analytics HUD / 霓虹数据分析 HUD`。
+7. 如果没有自定义风格，默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`。明确选择时，也可以使用可选内置风格：`Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装`、`Reference HUD Pattern / 参考 HUD 信息图`。
 8. 调用 `$video-use`，基于最终视频、时间包、风格、卡片风格库和关键词动效库生成包装动效设计稿。
 9. 等用户确认。
 10. 用 Remotion + GSAP 实现确认后的动效。

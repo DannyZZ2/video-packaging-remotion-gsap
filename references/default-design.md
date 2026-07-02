@@ -2,253 +2,143 @@
 
 ## 风格名称 / Style Name
 
-**Neon Analytics HUD / 霓虹数据分析 HUD**
+**Remotion Native Material Cards / Remotion 原生材质卡片**
 
-这是 `$video-auto-edit` 的默认视觉包装风格。它不是普通科技卡片，而是“AI 分析仪表盘 + 语音关键词解释层”：深色实拍或暗色背景上，叠加蓝色 HUD 标题、数据报告面板、雷达图、合规表、替换词卡、分流连线、终端步骤和纵向自动化报告。
+这是 `$video-auto-edit` 的唯一默认视觉包装风格。它不使用旧式科技仪表盘、全屏系统框、扫描网格、仪表盘外壳或整条视频进度条，而是以 Remotion + React + GSAP 可直接复刻的模块卡片、关键词排版卡和信息图环绕卡来解释口播关键词。
 
-This is the default visual packaging style for `$video-auto-edit`: an AI analytics dashboard and spoken-keyword explanation layer over dark footage, using blue HUD titles, report panels, radar charts, compliance tables, replacement chips, branch lines, terminal steps, and vertical automation reports.
+This is the only default visual packaging style for `$video-auto-edit`. It does not use old tech dashboard styling, full-screen frames, scan grids, dashboard shells, or global video progress bars. It uses Remotion-native modular cards, kinetic type cards, and infographic orbit cards that can be rebuilt directly with Remotion, React, and GSAP.
 
 ## 核心气质 / Core Feel
 
-- 深色、冷静、专业，像 AI 正在分析视频内容。
-- 信息密度高，但每个模块只解释一个当前关键词。
-- 蓝色是主视觉；绿色表示正确/完成，红色表示错误/违规，黄色表示分数/风险/重点。
-- 卡片、图表和连线都要有轻微发光、暗玻璃底和清晰层级。
-- 不做整条视频顶部/底部全局进度条。
+- 非仪表盘、非扫描系统感、非全屏系统框。
+- 像高级视频包装组件，而不是后台数据面板。
+- 卡片有材质、阴影、边框和层级，但结构必须能用 React `div`、SVG、CSS 渐变和 GSAP 复刻。
+- 每句话只围绕 1 个字幕关键词或短语触发包装，不把整句字幕做成大字卡。
+- 人物视频优先保护脸部、嘴部、手势和中下方字幕安全区。
 
-- Dark, calm, and analytical, as if an AI system is reading the content.
-- Dense but controlled: each module explains one active spoken keyword.
-- Blue is primary; green means correct/done, red means error/non-compliant, yellow means score/risk/emphasis.
-- Cards, charts, and connectors use subtle glow, dark glass surfaces, and clear hierarchy.
-- Do not generate global top or bottom video progress bars.
+- Non-dashboard, non-scanning-system, non-fullscreen-frame feel.
+- Premium video packaging components rather than backend analytics panels.
+- Cards have material, shadows, borders, and hierarchy, while remaining reproducible with React `div`, SVG, CSS gradients, and GSAP.
+- Each spoken sentence triggers packaging around one subtitle keyword or short phrase, not full sentence text.
+- Speaker footage must protect the face, mouth, gestures, and lower-center subtitle safe zone.
 
 ## 默认组件 / Default Components
 
-### 1. HUD Section Label / 左上 HUD 章节标题
-
-结构：
-
-- 左侧 3-5px 发光竖线。
-- 英文大写标签，蓝色、宽字距，例如 `WHAT IT DOES`、`TRAFFIC SCORE`、`COMPLIANCE CHECK`。
-- 下方一行中文副标题，白色粗体。
-
-动效：
-
-- 竖线从 0 高度生长。
-- 英文标签逐字或整体轻微滑入，蓝色弱发光。
-- 中文副标题延迟 3-6 帧淡入。
-
-### 2. AI Report Panel / AI 报告面板
+### 1. Remotion Modular Cards / 模块卡片
 
 适用：
 
-- 总结某个工具能做什么。
-- 展示 2-3 个分析结果、建议或指标。
+- 工具名、步骤、状态、能力点、短概念解释。
+- 需要清晰但不抢脸的侧边信息。
 
 结构：
 
-- 大型深色玻璃面板，1px 蓝色描边，圆角 10-14px。
-- 顶部标题栏：英文报告名 + 中文标题 + 右侧状态点，如 `SCANNING`。
-- 左侧编号模块：1/2/3 圆点 + 线性图标 + 英文标签 + 中文关键词。
-- 右侧用横向条形图、短线条或完成勾展示信息，不写长段落。
+- 1-2 张半哑光深色卡片，放在左侧、右侧或上半区。
+- 圆角 14-24px，透明渐变边框，轻微颗粒，软阴影。
+- 卡片内包含线性图标、英文短标签、中文关键词。
+- 单张主卡宽度建议为画面宽度 18%-32%，不横跨人物脸部。
 
 动效：
 
-- 面板先从左/下轻滑入并绘制边框。
-- 状态点闪烁 1-2 次后进入弱呼吸。
-- 编号模块按关键词落点逐条进入。
-- 横向条从 0 宽度增长；每条延迟 3-5 帧。
+- `cueFrame - 6` 卡片从 `y: 24, opacity: 0, scale: .96` 入场。
+- `cueFrame` 关键词文字完成入场并轻微 pop。
+- `cueFrame + 4` 边框或关键词区域弱发光一次。
+- SVG 连接线可用 `strokeDashoffset` 绘制，必要时带循环光晕点。
 
-### 3. Radar Score / 雷达评分图
+### 2. Kinetic Type Cards / 动态关键词排版卡
 
 适用：
 
-- 多维度评分、能力维度、内容诊断。
+- 强调观点词、反问词、结论词、教程关键动作。
+- 需要比普通字幕更有节奏的关键词强化。
 
 结构：
 
-- 中心五边形雷达图，外框蓝色发光，内部 3-5 层弱线。
-- 标签卡必须贴在最外侧五边形顶点附近，不放到图内部。
-- 每个标签卡包含线性图标、英文短词和中文短词。
+- 大号关键词 + pill 高亮 + 下划线/短色条 + 小贴纸标签。
+- 主词使用 44-68px 横屏字号或 38-58px 竖屏字号，`font-weight: 850-950`。
+- 关键词卡放在左右留白，不放到嘴部或字幕安全区。
 
 动效：
 
-- 五边形外框先绘制，内部网格依次淡入。
-- 当前维度顶点有一个小光点沿边线循环移动。
-- 标签卡从对应顶点外侧吸附进入。
-- 雷达填充面根据关键词逐点展开。
+- 关键词用 `clip-path` 或遮罩横向揭示。
+- pill 从词中心扩张，跟随关键词落点出现。
+- 下划线用 `scaleX` 从左到右绘制。
+- 小标签带 4-8 度旋转回正，落点轻微弹跳。
 
-### 4. Keyword Aura / 人物关键词光环
+### 3. Infographic Orbit Cards / 信息图环绕卡
 
 适用：
 
-- 需要围绕人物强调一个核心概念或情绪词。
+- 一个来源分出多个方向、三种方案、流程路径、概念关系。
+- 需要展示关联和传输，而不是单张静态卡片。
 
 结构：
 
-- 人物/主体下方保留在底层，文字在主体后方或左右避让，不挡脸和嘴。
-- 主体周围半圆或圆形蓝色刻度环，外圈点状轨道。
-- 中心只放 1 个短关键词，文字必须居中对齐。
+- 左侧或右侧源节点卡 + 2-3 条 SVG 曲线 + 目标 pill 标签。
+- 曲线从源节点边缘连接到目标卡边缘，长度根据卡片实际位置计算。
+- 目标卡包含图标、英文短标签、中文短词。
 
 动效：
 
-- 光环按弧线绘制，刻度短线错峰出现。
-- 关键词轻微放大进入，随后保持 2%-4% 的弱呼吸。
-- 如果人物在中间，文字层必须放在人物后方或安全侧边。
-
-### 5. Compliance Table / 合规检查表
-
-适用：
-
-- 错误 -> 正确、违规 -> 合规、旧词 -> 新词、问题 -> 修复。
-
-结构：
-
-- 暗色表格面板，顶部列名：类别、严重度、怎么改。
-- 每行左侧是问题项，中间是严重度点，右侧是红色错误词和绿色替换词。
-- 红绿词卡之间用短连接线和箭头，长度根据两个词卡边缘计算。
-
-动效：
-
-- 行按关键词落点进入，不一次性全亮。
-- 红色错误词先出现并轻微震动。
-- 连接线从红卡边缘绘制到绿卡边缘。
-- 连接线上必须有柔和光晕点循环移动，显性表现替换/传输。
-- 绿色替换词在光点到达时 pop 进入。
-
-### 6. Minimal Edit / 最小改动替换卡
-
-适用：
-
-- 只替换关键词、不改变整体语气。
-
-结构：
-
-- 大玻璃面板内放一组短词替换：原词、红色错误词、箭头、绿色新词。
-- 新词必须位于箭头指向的目标位置，不能偏到边缘或底部。
-- 下方可放 1-2 条弱化的保留原则卡片。
-
-动效：
-
-- 原词变暗，红词先贴上。
-- 箭头短促绘制，新词在箭头目标处弹入。
-- 不要让新词卡压到面板边缘。
-
-### 7. Gauge Score / 环形评分表
-
-适用：
-
-- 流量潜力、完成度、风险分、质量分。
-
-结构：
-
-- 半圆或环形粗线仪表盘。
-- 数字居中，例如 `82/100`；中文指标在下方。
-- 底部可放 1-2 个小指标卡。
-
-动效：
-
-- 当数值为 0 时，不显示右侧彩色进度端点。
-- 进度从 0 增长到目标分，末端光晕跟随进度移动。
-- 数字用计数动画增长，末尾轻微 settle。
-
-### 8. Branch Flow / 分流连线图
-
-适用：
-
-- 一个来源分出 2-3 个去向、工具路径、部署方式、内容流转。
-
-结构：
-
-- 左侧源节点卡，右侧三张目标卡。
-- 曲线从源节点边缘连接到每张目标卡左边缘，长度根据目标卡位置和宽度计算。
-- 三条线颜色可为蓝、绿、黄。
-
-动效：
-
-- 源节点先出现，三条路径按关键词逐条绘制。
-- 每条线上都有一个柔和发光点沿曲线循环运动。
-- 光点必须沿线移动，不停在终点。
-- 目标卡在光点接近时点亮。
-
-### 9. Terminal Steps / 终端步骤面板
-
-适用：
-
-- 命令、部署、调用、工具执行步骤。
-
-结构：
-
-- 深色终端窗口，左上红黄绿小点。
-- 顶部命令栏使用短命令，例如 `>_ codex code`。
-- 内部用 01/02/03 步骤，不写长代码块。
-- 每步包含图标、英文动作和中文短词。
-
-动效：
-
-- 命令栏短打字机进入。
-- 步骤逐条亮起，当前步骤边框或图标发光。
-- 不做持续 glitch；只允许 4-6 帧局部抖动作为强调。
-
-### 10. Auto Report / 纵向自动化报告
-
-适用：
-
-- 自动抓取、审查、输出、流水线。
-
-结构：
-
-- 左侧纵向节点链，节点之间用蓝/绿发光线连接。
-- 右侧对应每个节点放横向说明卡。
-- 当前节点亮，其它节点降亮。
-
-动效：
-
-- 节点从上到下依次点亮。
-- 连接线上有柔和光点向下循环移动。
-- 右侧说明卡与节点同步滑入。
+- 源节点先出现。
+- 曲线按关键词逐条绘制。
+- 每条连线上必须有柔和光晕点沿线循环移动，显性表现关联与传输。
+- 光点接近目标卡时，目标卡点亮或 pop 入场。
 
 ## 字体 / Typography
 
 ```text
-英文 HUD 标签：DIN Condensed / Avenir Next Condensed / Bebas Neue / Inter Black，ALL CAPS，letter-spacing 0.12em-0.22em。
-中文关键词：Source Han Sans Heavy / HarmonyOS Sans SC Black / PingFang SC Heavy，白色粗体，短词优先。
-卡片正文：PingFang SC Semibold / Source Han Sans Medium，避免长句。
-代码命令：JetBrains Mono / SF Mono / Menlo。
+主标题：Arial Black / HarmonyOS Sans SC Black / Source Han Sans Heavy / PingFang SC Heavy。
+关键词：HarmonyOS Sans SC Bold / Source Han Sans Heavy / PingFang SC Heavy / Inter ExtraBold。
+辅助标签：PingFang SC Semibold / Inter SemiBold / IBM Plex Sans SemiBold。
+代码或技术标签：JetBrains Mono / SF Mono / Menlo。
 ```
 
 规则：
 
-- 必须显式设置 `fontFamily`，不能依赖默认字体。
-- 中文关键词最多 2 行，每行不超过 8 个字。
-- 英文标签只做识别符，不写完整句子。
-- 字距不能为负值。
+- Remotion 组件必须显式设置 `fontFamily`。
+- 中文关键词最多 2 行，每行 1-8 个字。
+- 英文标签只做短识别符，例如 `PROMPT`、`OUTPUT`、`KEY`、`WEB`。
+- 字距不能为负值；技术标签可用 `letter-spacing: 0.06em-0.14em`。
 
 ## 颜色 / Color
 
 ```text
-background: #020812 / #06111f / rgba(0,0,0,0.45-0.68)
-primary blue: #109BFF / #1EA7FF
-cyan: #20E2D2
-green: #2FE36B
-red: #FF4D5B
-yellow: #FFD32A
-white: #F4F8FF
-panel fill: rgba(2, 8, 18, 0.62-0.82)
+background overlay: rgba(3,5,10,0.20-0.62)
+card fill: rgba(8,12,20,0.60-0.84)
+primary blue: #37A6FF / #2F7CFF
+green: #35E982
+coral: #FF6B7A
+yellow: #FFCC4A
+white: #FFFFFF / #F4F8FF
+border: rgba(255,255,255,0.14-0.24) or semantic accent 45%-65%
 ```
 
-## 安全区 / Safe Zones
+整条视频最多使用 1 个主色 + 2 个语义强调色。不要做单一蓝色系统面板，也不要让发光铺满全屏。
 
-- 人脸、嘴部、手势优先级高于包装元素。
-- 中下方字幕安全区默认不放大卡片。
+Use at most one primary color plus two semantic accent colors in one video. Do not make a single-blue system-panel look, and do not let glow cover the whole screen.
+
+## 材质 / Material
+
+- 默认卡片：半哑光深色卡片，透明渐变边框，轻微颗粒，内高光和外阴影。
+- 关键词卡：半透明深色底 + 彩色 pill + 手绘感下划线或短色条。
+- 信息图线条：SVG 曲线，圆头线帽，柔和 `drop-shadow`，移动光晕点。
+- 不使用旧式科技角框、扫描网格、全局进度条、雷达仪表盘外壳。
+
+## 布局与安全区 / Layout and Safe Zones
+
+- 人脸、嘴部、眼睛、胸前麦克风和手势优先级最高。
 - 卡片优先放左侧、右侧或上半区。
-- 如果必须在画面中间做图表，人物必须抠在上层，动画放在人物下方或后方。
+- 中下方字幕安全区默认不放大卡片。
+- 单句最多 1 张主卡 + 2 个标签；多元素必须错峰出现。
+- 如果需要在人物中间做图形，先做人像遮罩，让包装位于人物下方或后方。
 
 ## 禁用 / Do Not
 
-- 不生成整条视频的顶部/底部进度条。
-- 不生成大面积扫光、闪白或强转场光效。
-- 不让卡片遮挡脸、嘴、字幕。
-- 不用纯色扁平矩形代替玻璃面板。
-- 不用完整口播句子当大字卡。
-- 不把所有图表一次性全部出现，必须按语音关键词落点触发。
+- 不使用旧式科技仪表盘包装。
+- 不生成全屏系统框、扫描线、网格、雷达图、仪表盘外壳。
+- 不生成顶部或底部整条视频全局进度条。
+- 不使用大面积扫光、闪白或强转场光效。
+- 不让卡片遮挡脸、嘴、字幕和主要手势。
+- 不把完整口播句子作为大字卡片。
+- 不把所有元素一次性全部出现；必须按字幕关键词落点触发。

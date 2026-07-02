@@ -1,167 +1,69 @@
-# 卡片风格库 / Card Style Library
+# 默认卡片风格库 / Default Card Style Library
 
-> 用途：统一管理 `$video-auto-edit` 可选卡片风格，避免默认高级 HUD 和新增风格分散在多个文件中。  
-> Purpose: manage all selectable card styles for `$video-auto-edit` in one reference.
+> 用途：`$video-auto-edit` 的内置风格库。默认只使用一个主风格；用户明确指定时，可切换到其它内置风格。  
+> Purpose: built-in style library for `$video-auto-edit`. Use one default primary style unless the user explicitly selects another built-in style.
 
-## Reference Source / 参考来源
+## Built-In Style Policy / 内置风格策略
 
-本库只保存可直接复用的文字化风格规则，不依赖图片资源。若项目本地另有参考图或 Remotion 样例，可用它们辅助观察质感，但上传 skill 时只保留必要 Markdown 和配置文件。
+Built-in styles:
 
-This library stores reusable text-based style rules only and does not depend on bundled image assets. If local reference images or Remotion demos exist, use them only as observation aids; upload only required Markdown and config files for the skill.
+内置风格：
 
-可参考项目中的 `CodexAgentPackaging` Remotion 合成提炼包装语言，但不要照搬其中的整条视频顶部进度条。
+```text
+Default: Remotion Native Material Cards / Remotion 原生材质卡片
+Optional: Holographic Glass HUD / 全息玻璃 HUD
+Optional: Frosted Glass Packaging / 毛玻璃包装
+Optional: Reference HUD Pattern / 参考 HUD 信息图
+```
 
-## 使用原则 / Usage Rules
+Use `Remotion Native Material Cards` by default. Use optional built-in styles only when the user explicitly asks for them, provides a matching reference, or the approved packaging plan names that style. Do not generate full-screen system frames, radar dashboards, global progress bars, or analytics-panel shells unless they are part of the explicitly selected style.
 
-1. 先根据字幕语义选风格，不要整条视频随机混用。
-2. 一条视频最多使用 1 个主风格 + 1 个辅助风格。
-3. 所有动效仍按字幕关键词落点触发。
-4. 所有卡片必须避开脸部、嘴部和字幕安全区。
-5. 风格图只是方向参考，最终必须用 Remotion + GSAP 可复刻的 div、CSS、SVG、clip-path、box-shadow、transform 实现。
-6. `Neon Analytics HUD` 是基础默认风格；当前启用 6 种扩展风格。
+默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`。只有用户明确要求、提供匹配参考，或已确认包装方案指定时，才使用可选内置风格。不要生成全屏系统框、雷达仪表盘、全局进度条或数据分析面板外壳，除非它们属于已明确选择的风格。
 
-1. Choose styles according to subtitle meaning; do not mix styles randomly.
-2. Use at most one primary style plus one supporting style per video.
-3. Trigger all animations from subtitle keyword cue points.
-4. Keep all cards outside face, mouth, and subtitle-safe zones.
-5. Reference images are visual direction only; final implementation must be reproducible with Remotion + GSAP using divs, CSS, SVG, clip-path, box-shadow, and transforms.
-6. `Neon Analytics HUD` is the base default style; six extension styles are active.
+If the user provides a custom Markdown style or reference image, treat it as an external style brief for that task only. It is not added to the built-in style library unless the user explicitly asks to update the skill.
 
-## Active Styles / 已启用风格（共 7 种）
+如果用户提供自定义风格 Markdown 或参考图片，只把它作为该任务的外部风格 brief；除非用户明确要求更新 skill，否则不加入内置风格库。
 
-### Base. Neon Analytics HUD / 默认霓虹数据分析 HUD
+## Default Style / 默认风格
+
+### Remotion Native Material Cards / Remotion 原生材质卡片
 
 适合：
 
-- AI 工具讲解、视频诊断、流量评分、合规检查、关键词替换、Agent 流程报告。
-- 需要“像 AI 正在分析内容”的默认包装片段。
-- 口播每句话都要用对应图表或卡片解释，而不是只弹一个普通词卡。
+- AI 工具讲解、剪辑包装、教程步骤、关键词强化、流程说明、观点解释。
+- 需要轻量、清晰、可按字幕关键词触发的包装。
+- 需要用 Remotion + React + GSAP 直接复刻，而不是依赖复杂位图或不可控生成图。
 
 视觉结构：
 
-- 深色背景或压暗实拍画面上叠加数据分析 HUD。
-- 左上角固定风格章节标题：蓝色发光竖线 + 英文大写标签 + 中文副标题。
-- 组件优先使用 AI 报告面板、雷达评分图、关键词光环、合规检查表、最小改动替换卡、环形评分表、分流连线图、终端步骤面板、纵向自动化报告。
-- 卡片是暗玻璃面板，1px-2px 蓝色/语义色描边，边缘弱发光，内部有清晰行列、图标和短标签。
-- 语义色：蓝色为主视觉，绿色表示正确/完成，红色表示错误/违规，黄色表示分数/风险/重点。
+- 实拍画面上叠加材质化包装卡片。
+- 组件以模块卡片、动态关键词排版卡、信息图环绕卡为主。
+- 卡片放左右侧、上半区或空白墙面，避开脸、嘴、麦克风、手势和字幕安全区。
+- 卡片有半透明深色底、渐变边框、轻微颗粒、内高光、外阴影和明确字体层级。
+- 连线类动效必须使用 SVG 曲线和循环移动的柔和光晕点。
 
-字体：
+## Optional Built-In Style / 可选内置风格
 
-```text
-英文 HUD 标签：DIN Condensed / Avenir Next Condensed / Bebas Neue / Inter Black，ALL CAPS，letter-spacing 0.12em-0.22em，18-30px。
-中文关键词：Source Han Sans Heavy / HarmonyOS Sans SC Black / PingFang SC Heavy，38-76px，line-height 0.92-1.05。
-辅助说明：PingFang SC Semibold / Inter SemiBold，22-32px，line-height 1.18-1.32。
-代码或命令：JetBrains Mono / SF Mono，22-30px。
-```
-
-Remotion 实现：
-
-```text
-section label: glowing vertical bar + uppercase blue label + Chinese subtitle
-panel: dark glass card + semantic neon stroke + weak outer glow
-chart: radar/gauge/table/branch/terminal built with SVG/CSS primitives
-connector: SVG path with stroke draw + looping soft glow dot
-motion: section label -> panel border draw -> rows/cards/charts by keyword cue
-```
-
-动效建议：
-
-- 每句话按关键词选择一个匹配模块：报告、雷达、光环、表格、替换、评分、分流、终端或自动化报告。
-- `cueFrame - 6`：左上 HUD 章节标题先入场，竖线生长。
-- `cueFrame`：主面板边框绘制或图表骨架出现。
-- `cueFrame + 4`：当前关键词对应行/节点/卡片点亮。
-- 连线类动效必须有柔和光晕点沿线循环移动。
-- 待机只做边框弱呼吸、状态点闪烁、光点循环或数字轻微 settle。
-
-组件变体：
-
-- `AiHealthReportPanel`：一份 AI 体检报告，多行分析和建议。
-- `RadarScorePanel`：五维评分雷达图，标签贴外侧顶点。
-- `KeywordAuraRing`：人物后方关键词光环。
-- `ComplianceCheckTable`：违规词到合规词替换表。
-- `MinimalEditSwapCard`：只替换标记词的红绿词卡。
-- `GaugeScorePanel`：环形或半圆评分表。
-- `BranchFlowPanel`：一个源节点分流到多个目标卡。
-- `TerminalStepsPanel`：命令窗口 + 01/02/03 步骤。
-- `AutoReportPipeline`：纵向节点链 + 右侧说明卡。
-
-禁用：
-
-- 不做顶部/底部全局进度条。
-- 不把卡片做成纯色扁平矩形。
-- 不把完整口播句子作为大字卡片。
-- 不把雷达标签放进图内部；标签应贴在外侧顶点附近。
-- 不让连线光点停在终点，必须沿路径循环运动。
-
-### 1. Codex Agent Packaging HUD / Codex Agent 分段包装 HUD
-
-适合：
-
-- AI 工具能力介绍、Agent 工作流升级、视频生成链路、从单点功能到系统流程的解释。
-- 需要开头强 hook、随后拆成“能力卡 / 指令面板 / 执行状态 / 工作流升级”的片段。
-- 人物口播右侧或居中时，左侧有较大安全区域可承载包装的横屏/竖屏视频。
-
-视觉结构：
-
-- 左上角竖条 + 大写英文 HUD 标签 + 中文副标题，作为当前句子的章节锚点。
-- 主视觉使用巨大粗体标题或 1-3 张 HUD 能力卡，卡片有蓝色角框、网格纹理、半透明深色底和线性 SVG 图标。
-- 可使用三宫格能力卡、短命令面板、CLI 状态小面板、任务执行条、Agent Flow 双卡链路。
-- 颜色以电光蓝和青色为主，黄色只用于问号、ready、agent upgrade 等重点提示。
-- 背景可有局部网格和暗角遮罩，但不生成顶部/底部整条视频进度条。
-
-字体：
-
-```text
-英文 HUD 标签：Avenir Next Condensed / DIN Condensed / Bebas Neue，ALL CAPS，letter-spacing 0.12em-0.22em。
-大标题：Impact / YouSheBiaoTiHei / Source Han Sans Heavy，白色粗体，可加 1px 亮边和深色投影。
-中文关键词：Source Han Sans Heavy / PingFang SC Heavy，短词优先，避免整句字幕。
-命令文本：JetBrains Mono / SF Mono / Menlo。
-```
-
-Remotion 实现：
-
-```text
-top label: left vertical glow bar + uppercase label + small Chinese subtitle
-corner frame: 4-corner segmented border drawn with opacity stagger
-hero title: clip-path reveal + slight x slide + glow stroke/shadow
-ability card: dark glass panel + blue corner ticks + SVG line icon draw + label pop
-command panel: mono text type-in + ready chip pop
-workflow panel: two compact HUD cards + short glowing arrow
-```
-
-动效建议：
-
-- 关键词 cue 前 4-8 帧先出现左上 HUD 标签，竖条从 0 高度生长。
-- cue 点主标题用 `clip-path inset` 横向揭示，带 12-20px 滑入，不做整屏闪烁。
-- 能力卡按 6-10 帧错峰弹入，角框先亮，SVG 图标再描线，文字最后进入。
-- 命令面板只打短 prompt/命令，不打完整口播；ready chip 在关键词后 8-14 帧 pop。
-- 链路箭头要短而清晰；如果做连线，必须有循环移动的柔和光晕点。
-
-禁用：
-
-- 不生成顶部/底部整条视频进度条。
-- 不把卡片放到人物脸部、嘴部或中间字幕安全区。
-- 不把三宫格能力卡做得过大；口播包装里单张卡宽度优先控制在画面宽度 18%-28%。
-- 不使用负字距；标题不长期常驻遮挡主体。
-
-### 2. Holographic Glass HUD / 全息玻璃 HUD
+### Holographic Glass HUD / 全息玻璃 HUD
 
 适合：
 
 - prompt、命令、AI task、生成状态、工具面板。
-- 比 `Premium Tech HUD` 更偏蓝紫全息、命令面板和状态 chip 的片段。
+- 需要蓝紫全息、命令面板、状态 chip、短任务提示的片段。
+- 用户明确要求“全息玻璃 HUD”或提供同类参考图时。
 
 视觉结构：
 
 - 黑色/深蓝黑玻璃主卡，青色和紫色双层描边。
 - 小型状态 chip、命令行短文本、角标线框。
-- 背景可有极淡网格和 HUD 点阵，但不做全局进度条。
+- 背景可有极淡网格和点阵，但不做全局进度条。
 - 图标使用简单线性 SVG，不使用复杂图片图标。
+- 单屏优先 1 张主面板 + 1-2 个状态 chip，避免压住人物脸部和嘴部。
 
 Remotion 实现：
 
 ```text
-container: backdrop-filter blur(10px-16px), dark glass gradient
+container: backdrop-filter blur(10px-16px), dark blue-black glass gradient
 border: cyan/violet double stroke
 shadow: weak outer glow + inset highlight
 text: Inter Black / JetBrains Mono / Source Han Sans Heavy
@@ -173,6 +75,7 @@ motion: corner frame draw -> panel slide -> chip pop -> mono text type-in
 - 关键词 cue 前 4-6 帧绘制角标线框。
 - cue 点主卡轻微透视滑入，`scale 0.96 -> 1`。
 - 命令文字可用 6-12 帧打字机，但不要打完整长句。
+- 状态 chip 在关键词后 8-14 帧 pop。
 - 待机只做边框弱呼吸和光标闪烁。
 
 禁用：
@@ -180,174 +83,150 @@ motion: corner frame draw -> panel slide -> chip pop -> mono text type-in
 - 不做整屏扫描光。
 - 不做顶部/底部全局进度条。
 - 不把卡片做成纯色扁平矩形。
+- 不遮挡脸、嘴、字幕安全区。
 
-### 3. Kinetic Sticker Cards / 动感贴纸卡
+### Frosted Glass Packaging / 毛玻璃包装
 
 适合：
 
-- 轻松口播、点击提示、拖拽操作、hook、修正动作。
-- 需要更跳脱、更有创作者包装感，而不是冷静科技 HUD 的片段。
+- 口播、教程、访谈、AI 工具讲解中需要高级但不强科技感的轻包装。
+- 左侧竖向信息卡、右侧小提示卡、底部身份条、能力点摘要。
+- 用户明确要求“毛玻璃”“透明玻璃”“明亮玻璃卡片”或提供同类参考图时。
 
 视觉结构：
 
-- 黑色或深色磨砂贴纸卡，白色粗描边。
-- 彩色厚阴影层：蓝、红、绿、黄可按语义变化。
-- 圆形主图标区保留唯一主图标，例如鼠标、hook、扳手、手势。
-- 不生成顶部或角落的编号小方块、状态方块或角标块。
-- 可加入胶带、手绘下划线、拖拽标签、点击光圈，但必须克制。
+- 清透毛玻璃卡片叠在实拍画面上，透明但文字必须清楚。
+- 左侧可用一张竖向主卡，右侧放 1-2 张小卡，底部可放短身份条或主题条。
+- 使用白色、浅蓝、淡粉边缘光，避免过重雾面、脏噪点和大片灰蒙蒙遮罩。
+- 不使用卡片里的白点颗粒；扫光只允许入场后一次，不循环。
+- 卡片避开脸、嘴、麦克风和字幕区，优先贴左右空白区域。
 
 Remotion 实现：
 
 ```text
-card: dark rounded div + thick white border + colored offset shadow
-main icon: circular SVG icon area with click/ripple or drag motion
-corner badge: disabled; do not generate top or corner square badges
-texture: subtle grain via pseudo overlay, not raster-heavy
-motion: card bounce -> main icon pop -> text slide -> click ripple / drag tag
+container: backdrop-filter blur(8px-14px) saturate(1.35-1.55) contrast(1.04-1.08)
+fill: rgba(255,255,255,0.035-0.15) + subtle blue/rose transparent gradient
+border: rgba(255,255,255,0.38-0.55) + cyan/rose rim glow
+shadow: soft outer shadow + subtle inset highlight
+icon: translucent rounded square with semantic glow
+motion: card slide/pop -> one-shot shine sweep -> icon/text stagger -> subtle idle float
 ```
 
 动效建议：
 
-- 关键词 cue 点卡片弹入，`scale 0.90 -> 1.04 -> 1`。
-- 圆形主图标在 cue 后 4-6 帧 pop，点击光圈扩散 8-14 帧。
-- 不生成 `01/02/03` 这类顶部编号小方块，也不生成角落状态方块。
-- 拖拽标签可沿短弧线进入，但不要越过人物脸部。
+- 卡片从画面边缘滑入并轻微 `scale 0.96 -> 1`。
+- 入场完成后做一次 12-24 帧斜向扫光，之后停止。
+- 图标、标题、说明文字错峰 3-6 帧进入。
+- 待机只做 1-2px 轻微漂浮和弱边缘呼吸。
+- 退场淡出或侧滑，不做闪白和强扫描。
 
 禁用：
 
-- 不要生成顶部/角落编号小方块或彩色角标块。
-- 不要同时出现多个巨大鼠标指针。
-- 不要让贴纸堆叠遮挡脸、嘴或字幕。
+- 不做旧式 HUD 雷达、命令行扫描或全屏系统框。
+- 不做循环扫光。
+- 不在卡片上生成白点颗粒。
+- 不把玻璃层做得灰雾厚重导致人物和文字都发糊。
 
-### 4. Isometric Workflow Modules / 2.5D 工作流模块
+### Reference HUD Pattern / 参考 HUD 信息图
 
 适合：
 
-- Agent 工作流、自动化链路、步骤拆解、从 PLAN 到 RUN 到 DONE 的过程。
-- 需要表现“模块连接、任务流转、节点协作”的片段。
+- 信息图式解释：体检报告、评分、合规检查、最小改动、分支流向、终端步骤、自动报告。
+- 需要把一句话拆成“报告/图表/表格/路径/流程”的讲解段。
+- 用户明确要求参考 `ReferenceHudPatternDemo`、参考 HUD 信息图、流量评分、合规表格、路径分流等效果时。
 
 视觉结构：
 
-- 多张小型 2.5D 模块卡片，带顶部面和侧边厚度。
-- 细发光连线连接模块。
-- 每张卡只放一个短词或状态：`PLAN`、`RUN`、`DONE`、`CHECK`。
-- 颜色以深色模块为底，青色/绿色/橙色作为状态点。
+- 深蓝黑背景或暗色玻璃面板，左上角使用竖向发光条 + 英文标题 + 中文副标题。
+- 面板以 SVG 图表、表格、终端、分支路径为核心，不用整屏扫描光。
+- 语义色固定：蓝=信息/主路径，绿=通过/正确，黄=警告/评分，红=风险/错误。
+- 连线必须使用 SVG path，线条中间有循环移动的柔和光晕点，用来显性表现关联与传输。
+- 比默认风格信息密度更高，只在用户明确选择时使用。
 
 Remotion 实现：
 
 ```text
-card transform: perspective(900px) rotateX(8deg) rotateY(-10deg)
-side thickness: pseudo layer offset 8px-14px
-connector: SVG path stroke-dashoffset draw animation
-shadow: soft ambient occlusion under each module
+header: vertical glow bar + uppercase label + Chinese subtitle
+panel: dark glass gradient + semantic stroke + weak glow
+chart: SVG radar/gauge/table/branch/terminal primitives
+connector: strokeDashoffset draw + frame-driven moving glow dot
+text: Inter Black / JetBrains Mono / Source Han Sans Heavy
+motion: header reveal -> panel draw -> rows/cards/charts by keyword cue -> connector glow dot loop
 ```
 
 动效建议：
 
-- 模块按关键词 cue 依次从下方或侧边飞入。
-- 连线用 `strokeDashoffset` 从前一个节点画到下一个节点。
-- 当前关键词对应模块点亮，前一个模块降亮。
-- 完成态用绿色 check 芯片短促 pop。
+- 标题先出现，主面板 6-10 帧后描边绘制。
+- 表格行、雷达角标、终端步骤按字幕关键词逐项点亮。
+- 连线先绘制，再让光晕点沿路径循环运动；光点不能停在终点。
+- 仪表盘数值从 0 增长时，0 帧状态不能提前显示右侧进度。
+- 卡片间距、连线长度和目标卡宽度必须由内容尺寸决定，避免视觉间距不一致。
 
 禁用：
 
-- 不做复杂真实 3D 模型。
-- 不让所有节点同时发光。
-- 不在画面中心堆太多模块。
+- 不做整条视频顶部/底部全局进度条。
+- 不把标签放在雷达图内部；雷达标签应贴近最外侧多边形角点。
+- 不让大面板遮挡人物脸、嘴或字幕区。
 
-### 5. Soft Clay Neumorphic Cards / 柔和黏土拟物卡
-
-适合：
-
-- 友好教程、步骤提示、轻量设置、AI 助手能力介绍。
-- 需要降低科技冷感、让画面更亲和的片段。
-
-视觉结构：
-
-- 深色暖调背景上的柔和 2.5D 圆角卡片。
-- 凸起/内凹按钮、柔和阴影、缎面塑料或软黏土质感。
-- 小型模块 tiles、pill 卡、中心关键词块。
-- 颜色使用深梅紫、石墨、柔和青、蜜桃、奶油白、低饱和绿。
-
-Remotion 实现：
+## Typography / 字体
 
 ```text
-card: rounded div, satin gradient, soft box-shadow
-raised surface: light top-left shadow + dark bottom-right shadow
-inset icon: inner shadow + subtle SVG icon
-motion: springy rise -> soft press -> tile snap-in
+主标题：Arial Black / HarmonyOS Sans SC Black / Source Han Sans Heavy / PingFang SC Heavy，44-68px。
+关键词：HarmonyOS Sans SC Bold / Source Han Sans Heavy / PingFang SC Heavy / Inter ExtraBold，38-68px。
+辅助说明：PingFang SC Semibold / Inter SemiBold，18-30px。
+技术标签：JetBrains Mono / SF Mono / Menlo，16-24px。
 ```
 
-动效建议：
+规则：
 
-- 关键词 cue 点卡片从下方轻弹上来，`y 28 -> -4 -> 0`。
-- 按钮或 tile 在关键词落点后做一次 soft press。
-- 多个小模块可磁吸排列，但一屏不超过 3 个主元素。
-- 待机只做极轻微浮动，不做强发光。
+- 必须显式设置 `fontFamily`，不要依赖浏览器默认字体。
+- 中文关键词必须短，每行优先 1-8 个字。
+- 英文标签只做识别符，不写完整句子。
+- 不使用负字距。
 
-禁用：
+## Component Variants / 组件变体
 
-- 不要赛博霓虹过度发光。
-- 不要把所有卡片做成同一个圆角 pill。
-- 不要使用过多奶油/米色导致画面变单调。
+| Component | 用途 | 结构 | 动效 |
+|---|---|---|---|
+| `RemotionModularCard` | 工具名、步骤、状态、能力点 | 图标容器 + 英文标签 + 中文关键词 + 半哑光卡片 | y 位移淡入，轻微 scale pop，边框弱发光 |
+| `KineticTypeCard` | 观点词、结论词、动作词 | 大关键词 + pill 高亮 + 下划线 + 小贴纸 | clip-path 揭示，pill 扩张，下划线 scaleX 绘制 |
+| `InfographicOrbitCard` | 多方向路径、流程关系 | 源节点 + SVG 曲线 + 目标 pill 标签 | 路径绘制，光晕点沿线循环，目标卡点亮 |
+| `KeywordChip` | 工具名、概念词、分类 | 小胶囊标签，语义色描边 | 弹出、吸附、短暂 glow pulse |
+| `IconInfoCard` | 功能、模块、能力点 | 线性图标 + 双语短标签 | 图标先入，文字后入，边框点亮 |
+| `ComparisonSwapCard` | 旧词到新词、错误到正确 | 左红词 + 箭头 + 右绿词 | 红词轻震，箭头绘制，新词弹入 |
+| `MouseClickCallout` | 操作演示、点击动作 | 鼠标指针 + 光圈 + 小标签 | 指针移动，点击光圈 6-10 帧扩散 |
+| `MiniTerminalTag` | prompt、命令、工具状态 | 短命令条，不做大终端面板 | 短打字机，光标闪烁，局部高亮 |
+| `HolographicGlassPanel` | prompt、命令、AI task、生成状态 | 深色玻璃主卡 + 青紫双层描边 + 状态 chip + mono 短命令 | 角标绘制，面板滑入，chip pop，mono 打字 |
+| `FrostedGlassPanel` | focus、身份条、功能摘要、侧边提示 | 清透毛玻璃卡 + 浅色渐变边缘光 + 图标容器 + 短标题 | 侧滑/弹入，一次扫光，图标文字错峰，轻微待机漂浮 |
+| `ReferenceHudInfoPanel` | 报告、评分、合规、流程、终端步骤 | 左上标题系统 + 深色玻璃面板 + SVG 图表/表格/路径 | 面板描边绘制，行/图表错峰，连线光晕点循环 |
 
-### 6. Glitch Terminal Cards / 故障终端卡
-
-适合：
-
-- 错误、修复、命令执行、代码、状态切换、从 ERROR 到 PATCH 到 RESOLVED 的片段。
-- AI 工具、CLI、自动化任务执行类内容。
-
-视觉结构：
-
-- 深黑/墨绿色终端底。
-- 非对称框线、条码条、状态 LED、危险标签。
-- Monospace 命令短句和关键词 chip。
-- 红色错误态、蓝色处理中、绿色完成态。
-
-Remotion 实现：
+## Remotion Implementation / Remotion 实现
 
 ```text
-terminal card: dark panel + mono font + thin frame lines
-glitch: 4-8 frames only, translateX +/-2px, opacity jitter
-status leds: small circles with semantic colors
-barcode: repeated linear-gradient stripes
-chip: ERROR / PATCH / RESOLVED
+card: React div + CSS gradient border + backdrop-filter or translucent fill
+icon: inline SVG or lucide icon
+connector: SVG path with strokeDashoffset draw
+moving dot: frame-driven point along SVG/cubic path, rendered as soft glow circle
+keyword reveal: clip-path / mask / scaleX
+motion timing: cueFrame - 6 entry, cueFrame highlight, cueFrame + 8 settle
 ```
 
-动效建议：
+## Motion Rules / 动效规则
 
-- ERROR 关键词落点触发红色卡片短抖 2-3 次。
-- PATCH 触发蓝色修复 chip 贴上去。
-- RESOLVED 触发绿色边框点亮和 check 图标 pop。
-- glitch 只用于强调瞬间，不要持续闪烁。
+- 每个有意义句子按字幕关键词选择一个匹配组件。
+- 所有包装动效必须由关键词 cue 触发，不按均分时间随机出现。
+- 入场 180-360ms，使用 `power2.out` 或 `back.out(1.2)`。
+- 强调 80-160ms，关键词 pop、描边点亮或下划线绘制。
+- 待机只允许轻微呼吸、弱边框脉冲、光点循环或小标签漂浮。
+- 退场 120-240ms，淡出或轻微位移，不做强闪光转场。
+- 同组元素错峰 3-8 帧。
 
-禁用：
+## Do Not / 禁用
 
-- 不要整屏闪烁。
-- 不要长代码块。
-- 不要让 glitch 影响人物脸部或字幕。
-
-## Selection Guide / 选择规则
-
-| 字幕语义 | 推荐风格 |
-|---|---|
-| AI 工具、状态、概念解释 | `Neon Analytics HUD`、`Codex Agent Packaging HUD` 或 `Holographic Glass HUD` |
-| 视频诊断、体检报告、流量评分、合规检查 | `Neon Analytics HUD` |
-| Agent 工作流升级、视频生成链路、能力总览 | `Codex Agent Packaging HUD` |
-| prompt、命令、任务面板 | `Holographic Glass HUD` |
-| 点击、拖拽、轻松口播、hook 修正 | `Kinetic Sticker Cards` |
-| 工作流、步骤、Agent 链路 | `Isometric Workflow Modules` |
-| 友好教程、步骤提示、轻量设置 | `Soft Clay Neumorphic Cards` |
-| 错误、修复、CLI、状态切换 | `Glitch Terminal Cards` |
-
-## Shared Quality Checklist / 通用质检
-
-- 是否优先使用默认 `Neon Analytics HUD`；当前共 7 种：1 种基础默认风格 + 6 种扩展风格。
-- 是否一条视频最多 1 个主风格 + 1 个辅助风格。
-- 是否按字幕关键词落点触发。
-- 是否避开脸、嘴和字幕安全区。
-- 是否没有顶部/底部全局进度条。
-- 是否没有扁平纯色卡片。
-- 是否明确写出字体、材质、动效、布局和质量风险。
-- 如果使用 `Kinetic Sticker Cards`，是否没有生成顶部/角落编号小方块或状态角标。
+- 不使用旧式科技仪表盘包装。
+- 不生成顶部/底部整条视频全局进度条。
+- 不生成全屏系统框、雷达仪表盘或分析报告大面板。
+- 不把卡片做成纯色扁平矩形。
+- 不把完整口播句子作为大字卡片。
+- 不让连线光点停在终点，必须沿路径循环运动。
+- 不遮挡脸部、嘴部、手势和字幕安全区。
