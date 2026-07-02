@@ -105,6 +105,8 @@ The bundle must include:
 - `segment_timestamps_path`: required when Whisper is selected. If the local Whisper tool can produce word-level timestamps, include that file too, but still mark the provider as `whisper`.
 - `keyword_cues_path`: required for packaging. It must list each selected subtitle keyword, its subtitle line, trigger time, timing source, and confidence.
 - `edl_path`: edit decision file when available. If the user provided an already-edited video and no EDL exists, set this to `none`.
+- `asset_manifest_path`: optional but required when the user provides project images, logos, UI screenshots, stickers, transparent PNGs, product images, or other visual elements. The manifest must list each asset path, filename stem, visible text if any, inferred aliases, dimensions, transparency, and suggested use.
+- `gesture_cues_path`: optional but required when gesture placement is requested or detectable. It must list pointing, dragging, swiping, circling, drawing, or line-marking gestures with time range, hand/gesture position, direction, target area, and confidence.
 
 - `edited_video_path`：用于包装的最终剪辑视频。
 - `srt_path`：独立 SRT 路径。默认生成，不烧录进视频。
@@ -114,6 +116,8 @@ The bundle must include:
 - `segment_timestamps_path`：选择 Whisper 时必须提供。如果本地 Whisper 工具能产出词级时间戳，也一并保留，但 provider 仍标记为 `whisper`。
 - `keyword_cues_path`：包装阶段必须提供。它要列出每个选中的字幕关键词、所属字幕行、触发时间、时间来源和置信度。
 - `edl_path`：有剪辑决策文件时填写；如果用户提供的是已经剪辑好的视频且没有 EDL，写 `none`。
+- `asset_manifest_path`：可选；但当用户提供项目图片、logo、UI 截图、贴纸、透明 PNG、产品图或其它视觉元素时必须提供。清单要列出每个素材路径、文件名主干、可见文字、推断别名、尺寸、是否透明和建议用途。
+- `gesture_cues_path`：可选；但当用户要求或画面中可检测到手势位置时必须提供。它要列出指、拖、划、圈选、画线等手势的时间范围、手部/手势位置、方向、目标区域和置信度。
 
 If `$video-use` produced a fine cut, reuse cached transcript/SRT/timestamp artifacts only when they match the final edited video. If they were generated from the raw source or from an earlier preview, regenerate or normalize timing artifacts from the final edited video before packaging design.
 
@@ -130,6 +134,14 @@ Save the normalized bundle as `timing/<video-name>-packaging-timing.json` or `pa
 All packaging animations must be triggered by subtitle keyword cue points. Prefer exact word-level keyword start times from `word_timestamps_path`. If only segment-level Whisper timing is available, estimate the keyword trigger inside the matching subtitle segment by text position and nearby silence/speech energy, then mark the cue confidence as estimated. Do not trigger effects only from evenly divided scene times or generic segment start times unless the segment has no usable keyword; in that case write `triggerKeyword: none` and explain why.
 
 所有包装动效都必须按字幕关键词落点触发。优先使用 `word_timestamps_path` 中精确的词级关键词开始时间。如果只有 Whisper 分段时间，则根据关键词在字幕文本中的位置和附近静默/语音能量，在对应字幕段内估算触发点，并把 cue 置信度标记为 estimated。不要只按均分场景时间或泛泛的段落开始时间触发动效；除非该段没有可用关键词，此时必须写 `triggerKeyword: none` 并说明原因。
+
+When project assets are provided, match assets to subtitle keywords before designing overlays. Compare subtitle keywords against asset filename stems, visible text/OCR, user-provided labels, and inferred aliases using exact and fuzzy matching. If an asset name is identical or semantically similar to a subtitle keyword or phrase, show that asset at the keyword cue time unless it would block the face, mouth, subtitles, or the approved style. If multiple assets match, choose the most specific filename or visible-text match and record the reason. If no asset matches, continue with generated cards.
+
+当用户提供项目素材时，进入包装设计前先把素材和字幕关键词做匹配。用精确匹配和模糊匹配比较字幕关键词、素材文件名主干、图片可见文字/OCR、用户提供的标签和推断别名。若素材名称与字幕关键词或短语相同或语义相近，在该关键词落点展示这个素材，除非会挡脸、挡嘴、挡字幕或破坏已确认风格。多个素材都匹配时，选择文件名或可见文字最具体的那个，并记录原因。没有匹配素材时，继续使用生成卡片。
+
+When a pointing, dragging, swiping, circling, drawing-line, or line-marking gesture is detected near an asset or animation cue, use the gesture position as the preferred placement anchor. Place the image or animation near the fingertip/gesture path endpoint or along the drawn path, offset enough to keep the hand and face visible. If gesture placement conflicts with face/mouth/subtitle safety, choose the nearest safe adjacent zone and record the offset decision.
+
+当画面中在素材或动效 cue 附近检测到指、拖、划、圈选、画线等手势时，优先把手势位置作为放置锚点。图片或动画应出现在指尖、手势路径终点附近，或沿着画线路径出现，并保留足够偏移避免挡手和脸。如果手势位置与脸、嘴或字幕安全区冲突，选择最近的安全邻近区域，并记录偏移原因。
 
 ## Workflow / 流程
 
@@ -246,9 +258,11 @@ After receiving the edited video, ask whether the user wants a custom visual sty
 
 - If yes: ask the user to upload or point to either a style Markdown file or one or more reference images.
 - If no: use the project/default `DESIGN.md`. If no usable `DESIGN.md` exists, read `references/default-design.md` from this skill and use `Remotion Native Material Cards` as the default visual style brief.
+- Also ask whether the user has project visual assets to use in the packaging, such as images, logos, UI screenshots, product pictures, transparent PNGs, icons, stickers, or element folders. These are content assets, not style references.
 
 - 如果需要：让用户上传或指定风格 Markdown 文件，或上传一张/多张参考图片。
 - 如果不需要：使用项目或默认的 `DESIGN.md`。如果没有可用的 `DESIGN.md`，读取本 skill 的 `references/default-design.md`，并使用 `Remotion Native Material Cards / Remotion 原生材质卡片` 作为默认视觉风格简报。
+- 同时询问用户是否有要用于包装中的项目视觉素材，例如图片、logo、UI 截图、产品图、透明 PNG、图标、贴纸或元素文件夹。这些是内容素材，不是风格参考图。
 
 Read the selected style source before designing packaging. Carry forward hard constraints such as safe zones, colors, typography, and forbidden transitions.
 
@@ -258,9 +272,13 @@ If the user provides reference image(s), inspect the image(s) first and extract 
 
 如果用户提供参考图片，必须先观察图片并提取精简风格 brief，再进入包装设计。提取出的 brief 必须包含：布局模式、卡片形状和描边样式、字体气质、配色、发光/阴影处理、图标元素、信息密度、安全区影响、动效假设，以及哪些元素如果会挡脸、挡嘴或挡字幕就不要照搬。
 
-After reading a style Markdown or extracting a brief from reference image(s), pass the hard constraints and visual direction into `$video-use` as part of the packaging-design brief. If no stronger custom style is provided, pass `references/card-style-library.md` as the unified default card-polish and material-quality reference. The packaging plan must be designed by `$video-use` from the edited video, transcript text, EDL, SRT/timestamps, selected style Markdown or extracted image-style brief, card style library, and keyword-animation reference together. The main agent must not bypass `$video-use` and draft the packaging plan by itself.
+If the user provides content assets, build an asset manifest before packaging design. For images, inspect the file name, dimensions, alpha channel/transparent background, rough subject, and any visible text. Add inferred aliases such as simplified Chinese keywords, English tool names, product names, and filename tokens. Do not treat these assets as style references unless the user explicitly says so.
 
-读取风格 Markdown 或从参考图片提取 brief 后，必须把其中的硬约束和视觉方向作为包装设计 brief 交给 `$video-use`。如果用户没有提供更强的自定义风格，把 `references/card-style-library.md` 作为统一的默认卡片质感和材质质量参考。包装方案必须由 `$video-use` 基于剪辑后视频、转写文本、EDL、SRT/时间戳、所选风格 Markdown 或图片风格提取 brief、卡片风格库，以及关键词动效参考一起设计。主 Agent 不得绕过 `$video-use` 自行产出包装方案。
+如果用户提供内容素材，进入包装设计前必须建立素材清单。对图片检查文件名、尺寸、透明通道/透明背景、主体内容和可见文字。补充推断别名，例如中文关键词、英文工具名、产品名和文件名分词。除非用户明确说明，否则不要把这些素材当作风格参考图。
+
+After reading a style Markdown or extracting a brief from reference image(s), pass the hard constraints and visual direction into `$video-use` as part of the packaging-design brief. If no stronger custom style is provided, pass `references/card-style-library.md` as the unified default card-polish and material-quality reference. If content assets are provided, pass the asset manifest and matching rule as part of the same brief. The packaging plan must be designed by `$video-use` from the edited video, transcript text, EDL, SRT/timestamps, selected style Markdown or extracted image-style brief, asset manifest, gesture cues, card style library, and keyword-animation reference together. The main agent must not bypass `$video-use` and draft the packaging plan by itself.
+
+读取风格 Markdown 或从参考图片提取 brief 后，必须把其中的硬约束和视觉方向作为包装设计 brief 交给 `$video-use`。如果用户没有提供更强的自定义风格，把 `references/card-style-library.md` 作为统一的默认卡片质感和材质质量参考。如果用户提供了内容素材，把素材清单和匹配规则一起放进 brief。包装方案必须由 `$video-use` 基于剪辑后视频、转写文本、EDL、SRT/时间戳、所选风格 Markdown 或图片风格提取 brief、素材清单、手势 cue、卡片风格库，以及关键词动效参考一起设计。主 Agent 不得绕过 `$video-use` 自行产出包装方案。
 
 Default style brief when `DESIGN.md` is missing: read `references/default-design.md` completely before packaging design.
 
@@ -272,9 +290,9 @@ Use `$video-use` to analyze the edited video and align visual packaging to the t
 
 使用 `$video-use` 分析剪辑后的视频，并把视觉包装与字幕/文案内容对齐。此步骤不得渲染、不得修改、不得覆盖原视频。
 
-The main agent's role in this step is to prepare inputs for `$video-use`, including the packaging timing bundle, selected style Markdown or extracted image-style brief, `references/visual-quality-system.md`, and the keyword-animation reference. Verify that the bundle exists and points to the final edited video before asking `$video-use` for a plan. `$video-use` must return the packaging motion design draft. The main agent may summarize or relay that draft to the user, but must not replace it with a self-authored packaging plan.
+The main agent's role in this step is to prepare inputs for `$video-use`, including the packaging timing bundle, selected style Markdown or extracted image-style brief, asset manifest when available, gesture cues when available, `references/visual-quality-system.md`, and the keyword-animation reference. Verify that the bundle exists and points to the final edited video before asking `$video-use` for a plan. `$video-use` must return the packaging motion design draft. The main agent may summarize or relay that draft to the user, but must not replace it with a self-authored packaging plan.
 
-此步骤中，主 Agent 的职责是为 `$video-use` 准备输入，包括包装时间包、已选择的风格 Markdown 或图片风格提取 brief、`references/visual-quality-system.md`，以及关键词动效参考。请求 `$video-use` 出方案前，必须确认时间包存在，并且指向最终剪辑视频。包装动效设计稿必须由 `$video-use` 返回。主 Agent 可以整理或转述该设计稿给用户，但不得用自己另写的包装方案替代它。
+此步骤中，主 Agent 的职责是为 `$video-use` 准备输入，包括包装时间包、已选择的风格 Markdown 或图片风格提取 brief、可用素材清单、可用手势 cue、`references/visual-quality-system.md`，以及关键词动效参考。请求 `$video-use` 出方案前，必须确认时间包存在，并且指向最终剪辑视频。包装动效设计稿必须由 `$video-use` 返回。主 Agent 可以整理或转述该设计稿给用户，但不得用自己另写的包装方案替代它。
 
 Before drafting the packaging plan, read `references/visual-quality-system.md`, `references/card-style-library.md`, and `references/keyword-animation-effects.md`. The default built-in style is `Remotion Native Material Cards`. Optional built-in styles include `Holographic Glass HUD`, `Frosted Glass Packaging`, and `Reference HUD Pattern`; use them only when the user explicitly requests one, provides a matching reference, or the approved design draft names that style. A user-provided Markdown style or reference image may still be used as an explicit external custom style for that task.
 
@@ -292,6 +310,8 @@ The design draft must include, for every animation segment:
 - Layout: safe zone, face/mouth avoidance, subtitle-safe area, layer order.
 - Visual style: colors, font/weight, card style, glow, borders, hierarchy.
 - Card material: glass layer, dark gradient, semantic border, inner/outer shadow, icon container, and highlight treatment.
+- Matched asset: asset path/name, match source, match confidence, or `none`.
+- Gesture anchor: gesture type, position/region, placement decision, or `none`.
 - Applied style constraints: cite the specific constraints from the selected style Markdown or extracted image-style brief that shaped this segment.
 - Typography: exact `fontFamily`, weight, size range, line height, and fallback.
 - Component: one component from `references/visual-quality-system.md`, such as `KeywordChip`, `TerminalCard`, or `StepListCard`.
@@ -305,6 +325,8 @@ The design draft must include, for every animation segment:
 - 布局：安全区、不挡脸不挡嘴、字幕安全区、层级顺序。
 - 视觉风格：颜色、字体/字重、卡片样式、发光、边框、层级。
 - 卡片材质：玻璃层、暗色渐变、语义描边、内外阴影、图标容器和高光处理。
+- 匹配素材：素材路径/名称、匹配来源、匹配置信度，或写 `none`。
+- 手势锚点：手势类型、位置/区域、放置决策，或写 `none`。
 - 已应用的风格约束：说明该段具体采用了所选风格 Markdown 或图片风格提取 brief 中的哪些约束。
 - 字体：具体 `fontFamily`、字重、字号区间、行高和 fallback。
 - 组件：从 `references/visual-quality-system.md` 选择一个组件，例如 `KeywordChip`、`TerminalCard` 或 `StepListCard`。
@@ -324,6 +346,8 @@ The packaging motion design draft must use this exact Markdown block format. Do 
 运动：ease-out，关键元素错峰进入；如无独立运动细节，写“同动效描述”。
 布局：左上三分区，不碰脸部；层级在人物前但低视觉权重。
 卡片材质：黑色半透明玻璃底 + 深色渐变 + 蓝色语义描边 + 弱外发光 + 内阴影 + 左侧图标容器。
+匹配素材：none。
+手势锚点：none。
 已应用的风格约束：引用所选风格 Markdown 或图片风格提取 brief 中实际采用的颜色、字体、卡片、安全区或禁用项。
 字体：Source Han Sans Heavy / Inter Black，56-72px，line-height 0.96，fallback PingFang SC Heavy。
 组件：PremiumKeywordPanel + KeywordChip。
@@ -336,15 +360,17 @@ The packaging motion design draft must use this exact Markdown block format. Do 
 运动：ease-out，芯片间 4 帧错峰，边框青色脉冲一次。
 布局：左侧中上，保留下方字幕区。
 卡片材质：每枚芯片使用半哑光深色底、1px 语义色渐变描边、内侧暗角和图标弱发光，禁止纯色扁平矩形。
+匹配素材：assets/max-mode.png，source=filename+keyword，confidence=fuzzy；在“Max”关键词 cue 时显示为小图标贴片。
+手势锚点：pointing-right @ upper-left-safe-zone，confidence=estimated；贴片放在指向终点右侧 32px，避开手部。
 已应用的风格约束：引用所选风格 Markdown 或图片风格提取 brief 中实际采用的约束。
 字体：Inter ExtraBold / PingFang SC Semibold，28-36px，line-height 1.18。
 组件：RemotionModularCard / KeywordChip。
 质量风险：两枚芯片不要同时遮挡人物手势；边框发光不能过曝。
 ```
 
-Each segment must start with a precise `start-end` time range and must include `触发关键词`、`画面文字`、`动效`、`运动`、`布局`、`卡片材质`、`已应用的风格约束`、`字体`、`组件`、`质量风险`. If a segment has no visible overlay, write `画面文字：无` and explain why no overlay should appear. The visible text must be short and concrete; do not use full transcript sentences as on-screen overlay text unless the user explicitly requests it.
+Each segment must start with a precise `start-end` time range and must include `触发关键词`、`画面文字`、`动效`、`运动`、`布局`、`卡片材质`、`匹配素材`、`手势锚点`、`已应用的风格约束`、`字体`、`组件`、`质量风险`. If a segment has no visible overlay, write `画面文字：无` and explain why no overlay should appear. The visible text must be short and concrete; do not use full transcript sentences as on-screen overlay text unless the user explicitly requests it. If a matching asset exists, the plan must either use it or explicitly explain why it is not used.
 
-每个段落必须以精确的 `开始-结束` 时间范围开头，并且必须包含 `触发关键词`、`画面文字`、`动效`、`运动`、`布局`、`卡片材质`、`已应用的风格约束`、`字体`、`组件`、`质量风险`。如果某段不应出现包装元素，写 `画面文字：无` 并说明不出现动效的原因。画面文字必须短而具体；除非用户明确要求，不要把完整口播句子直接作为包装大字。
+每个段落必须以精确的 `开始-结束` 时间范围开头，并且必须包含 `触发关键词`、`画面文字`、`动效`、`运动`、`布局`、`卡片材质`、`匹配素材`、`手势锚点`、`已应用的风格约束`、`字体`、`组件`、`质量风险`。如果某段不应出现包装元素，写 `画面文字：无` 并说明不出现动效的原因。画面文字必须短而具体；除非用户明确要求，不要把完整口播句子直接作为包装大字。如果存在匹配素材，方案必须使用它，或明确说明为什么不用。
 
 Present the draft to the user and wait for approval. Do not implement Remotion before approval.
 
@@ -364,6 +390,8 @@ Implementation requirements:
 - Use GSAP for animation easing/timeline calculations or element motion logic.
 - Use the approved packaging plan as the source of truth.
 - Drive overlay entrances, highlights, bounces, clicks, card collisions, and exits from the approved subtitle keyword cue times. Convert cue seconds to Remotion frames and use those frames as animation anchors.
+- When the approved plan includes a matched asset, import or copy that image/element into the Remotion project asset folder and display it at the approved keyword cue. Preserve aspect ratio, clamp max size to the safe area, and use the approved style's card/frame treatment when needed.
+- When the approved plan includes a gesture anchor, place the matched asset or animation at the gesture-derived region first, then apply the recorded safety offset. Do not recenter it into a generic layout unless gesture placement would block the face, mouth, subtitles, or key hand motion.
 - Use `references/visual-quality-system.md` as the implementation quality bar for typography, components, hierarchy, spacing, and motion polish.
 - Use `references/card-style-library.md` as the unified implementation reference for the selected built-in or custom style. Default to `Remotion Native Material Cards`; use optional built-in styles only when explicitly selected in the approved plan.
 - Keep video and audio aligned to the edited video.
@@ -377,6 +405,8 @@ Implementation requirements:
 - 用 GSAP 负责动画缓动、时间线计算或元素运动逻辑。
 - 以用户确认的包装方案为唯一实现依据。
 - 按已确认方案中的字幕关键词落点驱动包装元素入场、高亮、弹跳、点击、卡片碰撞和退场。将 cue 秒数转换成 Remotion 帧，并以这些帧作为动画锚点。
+- 当确认方案包含匹配素材时，把该图片/元素导入或复制到 Remotion 项目素材目录，并在对应关键词 cue 展示。保持原始比例，把最大尺寸限制在安全区内，必要时套用已选风格的卡片/边框处理。
+- 当确认方案包含手势锚点时，优先把匹配素材或动画放到手势推导区域，再应用记录的安全偏移。除非手势位置会挡脸、挡嘴、挡字幕或关键手部动作，否则不要改成通用居中布局。
 - 使用 `references/visual-quality-system.md` 作为字体、组件、层级、间距和动效质感的实现质量标准。
 - 使用 `references/card-style-library.md` 作为已选内置或自定义风格的统一实现参考。默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`；只有在确认方案明确选择时才使用可选内置风格。
 - 保持视频与音频和剪辑后视频对齐。
@@ -471,6 +501,8 @@ Never skip these gates:
 - Do not generate flat single-layer cards. Cards need glass material, gradient, semantic border, inner/outer shadows, icon container, and explicit typography hierarchy.
 - Do not use unselected optional styles. Default to `Remotion Native Material Cards`; use `Holographic Glass HUD`, `Frosted Glass Packaging`, or `Reference HUD Pattern` only when explicitly selected.
 - Do not ignore reference image(s) when the user provides them as the custom style source; extract a style brief first.
+- Do not ignore user-provided content assets. If an asset name, label, visible text, or alias matches a subtitle keyword, use it at that keyword cue or explicitly explain why it is unsafe or unsuitable.
+- Do not place gesture-driven assets in a generic center position. If pointing, dragging, swiping, circling, or line-drawing gestures are visible, use the gesture region as the preferred placement anchor with a safety offset.
 - Do not silently switch from Remotion + GSAP to another tool when setup is inconvenient.
 - Do not overwrite the original or edited source video.
 
@@ -486,5 +518,7 @@ Never skip these gates:
 - 不要生成单层扁平卡片。卡片需要玻璃材质、渐变、语义描边、内外阴影、图标容器和明确字体层级。
 - 不要混用未被选择的可选内置风格。默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`；只有明确选择时才使用 `Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装` 或 `Reference HUD Pattern / 参考 HUD 信息图`。
 - 用户提供参考图片作为自定义风格来源时，不要忽略图片；必须先提取风格 brief。
+- 不要忽略用户提供的内容素材。只要素材名称、标签、可见文字或别名匹配字幕关键词，就在该关键词 cue 使用，或明确说明为什么不安全/不适合。
+- 不要把手势触发的素材放到通用居中位置。如果画面中有指、拖、划、圈选或画线手势，优先使用手势区域作为放置锚点，并做安全偏移。
 - 不要因为环境麻烦就偷偷换掉 Remotion + GSAP。
 - 不要覆盖原始视频或剪辑后源视频。

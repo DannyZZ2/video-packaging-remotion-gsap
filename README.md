@@ -42,33 +42,39 @@ git clone https://github.com/DannyZZ2/video-auto-edit.git ~/.codex/skills/video-
 2. Ask whether the user needs editing.
 3. If editing is needed, ask for the source video folder and choose normal edit or fine-cut.
 4. If editing is not needed, ask for the already-edited video.
-5. Generate or normalize SRT, transcript, timestamp, edit-decision, and keyword-cue data into one packaging timing bundle.
-6. Ask whether the user wants a custom style Markdown or reference image.
-7. If no custom style is provided, use the default `Remotion Native Material Cards` style. Optional built-in styles are available when explicitly selected: `Holographic Glass HUD`, `Frosted Glass Packaging`, and `Reference HUD Pattern`.
-8. Use `$video-use` to generate a packaging motion design draft from the final video, timing bundle, selected style, card style library, and keyword animation library.
-9. Wait for user confirmation.
-10. Implement the approved design with Remotion + GSAP.
-11. Open Remotion Studio for preview only.
-12. Export only after the user confirms the Studio preview.
+5. Generate or normalize SRT, transcript, timestamp, edit-decision, keyword-cue, project-asset, and gesture-cue data into one packaging timing bundle.
+6. Ask whether the user wants a custom style Markdown or reference image, and whether they have content assets such as images, logos, UI screenshots, transparent PNGs, icons, stickers, or element folders.
+7. If content assets are provided, match asset names, visible text, labels, and aliases to subtitle keywords. When a subtitle keyword matches an asset, show that asset at the keyword cue unless safety or style constraints prevent it.
+8. If pointing, dragging, swiping, circling, or line-drawing gestures are visible near a cue, use the gesture position as the preferred image/animation anchor.
+9. If no custom style is provided, use the default `Remotion Native Material Cards` style. Optional built-in styles are available when explicitly selected: `Holographic Glass HUD`, `Frosted Glass Packaging`, and `Reference HUD Pattern`.
+10. Use `$video-use` to generate a packaging motion design draft from the final video, timing bundle, selected style, asset manifest, gesture cues, card style library, and keyword animation library.
+11. Wait for user confirmation.
+12. Implement the approved design with Remotion + GSAP.
+13. Open Remotion Studio for preview only.
+14. Export only after the user confirms the Studio preview.
 
 1. 先问用户是否使用 ElevenLabs，还是使用本地 Whisper 转写。
 2. 再问用户是否需要剪辑。
 3. 如果需要剪辑，让用户提供源视频文件夹，并选择默认剪辑或精剪。
 4. 如果不需要剪辑，让用户提供已经剪辑好的视频。
-5. 将 SRT、转写文本、时间戳、剪辑决策和关键词 cue 统一整理为包装时间包。
-6. 询问是否使用自定义风格 Markdown 或参考图片。
-7. 如果没有自定义风格，默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`。明确选择时，也可以使用可选内置风格：`Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装`、`Reference HUD Pattern / 参考 HUD 信息图`。
-8. 调用 `$video-use`，基于最终视频、时间包、风格、卡片风格库和关键词动效库生成包装动效设计稿。
-9. 等用户确认。
-10. 用 Remotion + GSAP 实现确认后的动效。
-11. 只打开 Remotion Studio 预览。
-12. 用户确认 Studio 效果后再导出。
+5. 将 SRT、转写文本、时间戳、剪辑决策、关键词 cue、项目素材和手势 cue 统一整理为包装时间包。
+6. 询问是否使用自定义风格 Markdown 或参考图片，并询问是否有图片、logo、UI 截图、透明 PNG、图标、贴纸或元素文件夹等内容素材。
+7. 如果用户提供内容素材，用素材名称、可见文字、标签和别名匹配字幕关键词。字幕关键词匹配到素材时，在该关键词 cue 展示素材，除非安全区或风格约束不允许。
+8. 如果画面中在 cue 附近有指、拖、划、圈选或画线手势，优先使用手势位置作为图片/动画锚点。
+9. 如果没有自定义风格，默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`。明确选择时，也可以使用可选内置风格：`Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装`、`Reference HUD Pattern / 参考 HUD 信息图`。
+10. 调用 `$video-use`，基于最终视频、时间包、风格、素材清单、手势 cue、卡片风格库和关键词动效库生成包装动效设计稿。
+11. 等用户确认。
+12. 用 Remotion + GSAP 实现确认后的动效。
+13. 只打开 Remotion Studio 预览。
+14. 用户确认 Studio 效果后再导出。
 
 ## Core Rules / 核心规则
 
 - Do not edit, package, render, or export before the matching confirmation step.
 - Generate independent SRT by default; do not burn subtitles unless explicitly requested.
 - Trigger all packaging animations from subtitle/voice keyword cue points.
+- Use matching user-provided content assets when asset names, labels, visible text, or aliases match subtitle keywords.
+- Use visible pointing, dragging, swiping, circling, or line-drawing gestures as preferred placement anchors.
 - Avoid blocking faces, mouths, gestures, and the subtitle safe zone.
 - Do not generate global top or bottom video progress bars.
 - Do not switch away from Remotion + GSAP for animation implementation.
@@ -77,6 +83,8 @@ git clone https://github.com/DannyZZ2/video-auto-edit.git ~/.codex/skills/video-
 - 未到对应确认节点前，不剪辑、不包装、不渲染、不导出。
 - 默认生成独立 SRT；除非用户明确要求，否则不烧录字幕。
 - 所有包装动效必须按语音/字幕关键词落点触发。
+- 当用户提供内容素材，且素材名称、标签、可见文字或别名匹配字幕关键词时，优先使用该素材。
+- 当画面中有指、拖、划、圈选或画线手势时，优先把它作为包装元素的放置锚点。
 - 避免遮挡脸、嘴、手势和字幕安全区。
 - 不生成顶部/底部整条视频进度条。
 - 动画实现不切换到 Remotion + GSAP 以外的方案。
