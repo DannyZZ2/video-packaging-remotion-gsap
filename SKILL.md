@@ -105,7 +105,7 @@ The bundle must include:
 - `segment_timestamps_path`: required when Whisper is selected. If the local Whisper tool can produce word-level timestamps, include that file too, but still mark the provider as `whisper`.
 - `keyword_cues_path`: required for packaging. It must list each selected subtitle keyword, its subtitle line, trigger time, timing source, and confidence.
 - `edl_path`: edit decision file when available. If the user provided an already-edited video and no EDL exists, set this to `none`.
-- `asset_manifest_path`: optional but required when the user provides project images, logos, UI screenshots, stickers, transparent PNGs, product images, or other visual elements. The manifest must list each asset path, filename stem, visible text if any, inferred aliases, dimensions, transparency, and suggested use.
+- `asset_manifest_path`: required by default for packaging. Build it from the current Codex project/workspace files, plus any extra asset paths explicitly provided by the user. Do not scan the uploaded video's source folder or parent directory for assets unless the user explicitly designates that folder as an asset source. The manifest must list each asset path, source root, filename stem, filename-token aliases, dimensions, transparency, and suggested use. Do not OCR, classify, or infer meaning from the asset image content for matching.
 - `gesture_cues_path`: optional but required when gesture placement is requested or detectable. It must list pointing, dragging, swiping, circling, drawing, or line-marking gestures with time range, hand/gesture position, direction, target area, and confidence.
 
 - `edited_video_path`：用于包装的最终剪辑视频。
@@ -116,7 +116,7 @@ The bundle must include:
 - `segment_timestamps_path`：选择 Whisper 时必须提供。如果本地 Whisper 工具能产出词级时间戳，也一并保留，但 provider 仍标记为 `whisper`。
 - `keyword_cues_path`：包装阶段必须提供。它要列出每个选中的字幕关键词、所属字幕行、触发时间、时间来源和置信度。
 - `edl_path`：有剪辑决策文件时填写；如果用户提供的是已经剪辑好的视频且没有 EDL，写 `none`。
-- `asset_manifest_path`：可选；但当用户提供项目图片、logo、UI 截图、贴纸、透明 PNG、产品图或其它视觉元素时必须提供。清单要列出每个素材路径、文件名主干、可见文字、推断别名、尺寸、是否透明和建议用途。
+- `asset_manifest_path`：默认必须生成。素材来源是当前 Codex 项目/工作区文件，以及用户明确额外指定的素材路径。不要自动扫描用户上传视频所在的素材文件夹或父目录，除非用户明确把该目录指定为素材来源。清单要列出每个素材路径、来源根目录、文件名主干、文件名分词别名、尺寸、是否透明和建议用途。匹配时不要 OCR、不要分类、不要根据素材图片内容推断含义。
 - `gesture_cues_path`：可选；但当用户要求或画面中可检测到手势位置时必须提供。它要列出指、拖、划、圈选、画线等手势的时间范围、手部/手势位置、方向、目标区域和置信度。
 
 If `$video-use` produced a fine cut, reuse cached transcript/SRT/timestamp artifacts only when they match the final edited video. If they were generated from the raw source or from an earlier preview, regenerate or normalize timing artifacts from the final edited video before packaging design.
@@ -135,9 +135,9 @@ All packaging animations must be triggered by subtitle keyword cue points. Prefe
 
 所有包装动效都必须按字幕关键词落点触发。优先使用 `word_timestamps_path` 中精确的词级关键词开始时间。如果只有 Whisper 分段时间，则根据关键词在字幕文本中的位置和附近静默/语音能量，在对应字幕段内估算触发点，并把 cue 置信度标记为 estimated。不要只按均分场景时间或泛泛的段落开始时间触发动效；除非该段没有可用关键词，此时必须写 `triggerKeyword: none` 并说明原因。
 
-When project assets are provided, match assets to subtitle keywords before designing overlays. Compare subtitle keywords against asset filename stems, visible text/OCR, user-provided labels, and inferred aliases using exact and fuzzy matching. If an asset name is identical or semantically similar to a subtitle keyword or phrase, show that asset at the keyword cue time unless it would block the face, mouth, subtitles, or the approved style. If multiple assets match, choose the most specific filename or visible-text match and record the reason. If no asset matches, continue with generated cards.
+By default, search the current Codex project/workspace for packaging assets before designing overlays. Include common image and element formats such as `.png`, `.jpg`, `.jpeg`, `.webp`, `.svg`, `.gif`, `.json` animation data, and clearly named asset folders. Exclude dependency/build/cache folders such as `node_modules`, `.git`, `dist`, `build`, `.next`, `out`, `exports`, and rendered video output folders. Do not search inside the uploaded video's project/source folder just because the video came from there. Match discovered assets to subtitle keywords by comparing only asset filenames, filename stems, path segment names, and filename-token aliases using exact and fuzzy matching. Do not inspect image contents, do not OCR visible text, and do not classify the image subject for matching. If an asset name is identical or semantically similar to a subtitle keyword or phrase, show that asset at the keyword cue time unless it would block the face, mouth, subtitles, or the approved style. If multiple assets match, choose the most specific filename match and record the reason. If no filename match exists, continue with generated cards.
 
-当用户提供项目素材时，进入包装设计前先把素材和字幕关键词做匹配。用精确匹配和模糊匹配比较字幕关键词、素材文件名主干、图片可见文字/OCR、用户提供的标签和推断别名。若素材名称与字幕关键词或短语相同或语义相近，在该关键词落点展示这个素材，除非会挡脸、挡嘴、挡字幕或破坏已确认风格。多个素材都匹配时，选择文件名或可见文字最具体的那个，并记录原因。没有匹配素材时，继续使用生成卡片。
+默认在当前 Codex 项目/工作区中搜索包装素材，再进入包装设计。纳入 `.png`、`.jpg`、`.jpeg`、`.webp`、`.svg`、`.gif`、`.json` 动画数据和命名清晰的素材目录。排除 `node_modules`、`.git`、`dist`、`build`、`.next`、`out`、`exports`、渲染输出目录等依赖/构建/缓存目录。不要因为视频来自某个文件夹，就自动扫描用户上传视频所在的项目/素材文件夹。只用素材文件名、文件名主干、路径片段名称和文件名分词别名与字幕关键词做精确匹配和模糊匹配。不要理解图片内容，不要 OCR 可见文字，不要根据图片主体类别做匹配。若素材名称与字幕关键词或短语相同或语义相近，在该关键词落点展示这个素材，除非会挡脸、挡嘴、挡字幕或破坏已确认风格。多个素材都匹配时，选择文件名最具体的那个，并记录原因。没有文件名匹配素材时，继续使用生成卡片。
 
 When a pointing, dragging, swiping, circling, drawing-line, or line-marking gesture is detected near an asset or animation cue, use the gesture position as the preferred placement anchor. Place the image or animation near the fingertip/gesture path endpoint or along the drawn path, offset enough to keep the hand and face visible. If gesture placement conflicts with face/mouth/subtitle safety, choose the nearest safe adjacent zone and record the offset decision.
 
@@ -258,11 +258,13 @@ After receiving the edited video, ask whether the user wants a custom visual sty
 
 - If yes: ask the user to upload or point to either a style Markdown file or one or more reference images.
 - If no: use the project/default `DESIGN.md`. If no usable `DESIGN.md` exists, read `references/default-design.md` from this skill and use `Remotion Native Material Cards` as the default visual style brief.
-- Also ask whether the user has project visual assets to use in the packaging, such as images, logos, UI screenshots, product pictures, transparent PNGs, icons, stickers, or element folders. These are content assets, not style references.
+- Use current Codex project/workspace assets by default for packaging. Scan the current Codex project files for images, logos, UI screenshots, product pictures, transparent PNGs, icons, stickers, or element folders, then build the asset manifest. Ask only whether the user wants to add extra asset paths or disable project-asset matching.
+- Do not use the uploaded video's source folder as the default asset search root. If the edited video is outside the current Codex project, treat it only as the video input, not as an asset directory.
 
 - 如果需要：让用户上传或指定风格 Markdown 文件，或上传一张/多张参考图片。
 - 如果不需要：使用项目或默认的 `DESIGN.md`。如果没有可用的 `DESIGN.md`，读取本 skill 的 `references/default-design.md`，并使用 `Remotion Native Material Cards / Remotion 原生材质卡片` 作为默认视觉风格简报。
-- 同时询问用户是否有要用于包装中的项目视觉素材，例如图片、logo、UI 截图、产品图、透明 PNG、图标、贴纸或元素文件夹。这些是内容素材，不是风格参考图。
+- 默认使用当前 Codex 项目/工作区里的素材做包装。扫描当前 Codex 项目文件中的图片、logo、UI 截图、产品图、透明 PNG、图标、贴纸或元素文件夹，并生成素材清单。只询问用户是否要额外补充素材路径，或是否关闭项目素材匹配。
+- 不要把用户上传视频所在的源文件夹作为默认素材搜索根目录。如果剪辑视频在当前 Codex 项目之外，只把它当作视频输入，不把其所在目录当素材目录。
 
 Read the selected style source before designing packaging. Carry forward hard constraints such as safe zones, colors, typography, and forbidden transitions.
 
@@ -276,17 +278,17 @@ If a reference image file name contains `github`, or the image visibly contains 
 
 如果参考图片文件名包含 `github`，或图片中明显出现 GitHub 标识、仓库路径、`用户名 / 项目名` 结构、Public/Private 标记、语言占比条等信息，必须从中提取 GitHub 项目卡片模式。提取内容必须包括：用户名/组织名、项目名、项目功能、可见的公开/私有标记、可见的语言列表和占比，以及卡片视觉处理方式。后续字幕关键词或用户素材匹配到 `github`、`repo`、`仓库`、`项目`、`开源`、仓库名或卡片中的工具名时，优先生成 `GitHubRepoCard`，不要退化成普通卡片。
 
-If the user provides content assets, build an asset manifest before packaging design. For images, inspect the file name, dimensions, alpha channel/transparent background, rough subject, and any visible text. Add inferred aliases such as simplified Chinese keywords, English tool names, product names, and filename tokens. Do not treat these assets as style references unless the user explicitly says so.
+Build an asset manifest before packaging design from the current Codex project/workspace and any user-specified extra asset paths. For images, inspect only the file name, path segment names, dimensions, and alpha channel/transparent background. Add aliases only from filename tokens and user-explicit asset names. Do not inspect image contents, do not OCR visible text, and do not infer rough subject, product type, or semantic meaning from the pixels. Do not treat these assets as style references unless the user explicitly says so.
 
-如果用户提供内容素材，进入包装设计前必须建立素材清单。对图片检查文件名、尺寸、透明通道/透明背景、主体内容和可见文字。补充推断别名，例如中文关键词、英文工具名、产品名和文件名分词。除非用户明确说明，否则不要把这些素材当作风格参考图。
+进入包装设计前，必须基于当前 Codex 项目/工作区和用户明确补充的素材路径建立素材清单。对图片只检查文件名、路径片段名称、尺寸、透明通道/透明背景。别名只来自文件名分词和用户明确提供的素材名称。不要理解图片内容，不要 OCR 可见文字，不要根据像素推断主体、产品类型或语义。除非用户明确说明，否则不要把这些素材当作风格参考图。
 
-When a content asset file name contains `github`, inspect it for repository-card data as well. If it contains enough information, add a `githubRepoCard` entry to the asset manifest with `owner`, `repo`, `function`, `visibility`, `languages`, `languagePercents`, `matchedKeywords`, and `sourceImage`.
+When a discovered or user-specified content asset file name contains `github`, create a `githubRepoCard` entry only from filename tokens or user-provided metadata. Do not inspect the asset image content to extract repository data. If filename/metadata contains enough information, add `owner`, `repo`, `function`, `visibility`, `languages`, `languagePercents`, `matchedKeywords`, and `sourceImage`; otherwise keep missing fields as `unknown` for the design draft to fill manually or omit.
 
-当内容素材文件名包含 `github` 时，也要检查它是否包含项目卡片信息。如果信息足够，在素材清单中加入 `githubRepoCard` 条目，字段包括 `owner`、`repo`、`function`、`visibility`、`languages`、`languagePercents`、`matchedKeywords` 和 `sourceImage`。
+当扫描发现或用户明确指定的内容素材文件名包含 `github` 时，只能从文件名分词或用户提供的元数据建立 `githubRepoCard` 条目。不要理解素材图片内容来提取仓库信息。如果文件名/元数据足够，填写 `owner`、`repo`、`function`、`visibility`、`languages`、`languagePercents`、`matchedKeywords` 和 `sourceImage`；否则缺失字段写 `unknown`，留给设计稿手动补充或省略。
 
-After reading a style Markdown or extracting a brief from reference image(s), pass the hard constraints and visual direction into `$video-use` as part of the packaging-design brief. If no stronger custom style is provided, pass `references/card-style-library.md` as the unified default card-polish and material-quality reference. If content assets are provided, pass the asset manifest and matching rule as part of the same brief. The packaging plan must be designed by `$video-use` from the edited video, transcript text, EDL, SRT/timestamps, selected style Markdown or extracted image-style brief, asset manifest, gesture cues, card style library, and keyword-animation reference together. The main agent must not bypass `$video-use` and draft the packaging plan by itself.
+After reading a style Markdown or extracting a brief from reference image(s), pass the hard constraints and visual direction into `$video-use` as part of the packaging-design brief. If no stronger custom style is provided, pass `references/card-style-library.md` as the unified default card-polish and material-quality reference. Always pass the current-project asset manifest and matching rule unless the user explicitly disables asset matching. The packaging plan must be designed by `$video-use` from the edited video, transcript text, EDL, SRT/timestamps, selected style Markdown or extracted image-style brief, asset manifest, gesture cues, card style library, and keyword-animation reference together. The main agent must not bypass `$video-use` and draft the packaging plan by itself.
 
-读取风格 Markdown 或从参考图片提取 brief 后，必须把其中的硬约束和视觉方向作为包装设计 brief 交给 `$video-use`。如果用户没有提供更强的自定义风格，把 `references/card-style-library.md` 作为统一的默认卡片质感和材质质量参考。如果用户提供了内容素材，把素材清单和匹配规则一起放进 brief。包装方案必须由 `$video-use` 基于剪辑后视频、转写文本、EDL、SRT/时间戳、所选风格 Markdown 或图片风格提取 brief、素材清单、手势 cue、卡片风格库，以及关键词动效参考一起设计。主 Agent 不得绕过 `$video-use` 自行产出包装方案。
+读取风格 Markdown 或从参考图片提取 brief 后，必须把其中的硬约束和视觉方向作为包装设计 brief 交给 `$video-use`。如果用户没有提供更强的自定义风格，把 `references/card-style-library.md` 作为统一的默认卡片质感和材质质量参考。除非用户明确关闭素材匹配，否则始终把当前项目素材清单和匹配规则一起放进 brief。包装方案必须由 `$video-use` 基于剪辑后视频、转写文本、EDL、SRT/时间戳、所选风格 Markdown 或图片风格提取 brief、素材清单、手势 cue、卡片风格库，以及关键词动效参考一起设计。主 Agent 不得绕过 `$video-use` 自行产出包装方案。
 
 Default style brief when `DESIGN.md` is missing: read `references/default-design.md` completely before packaging design.
 
@@ -382,7 +384,7 @@ The packaging motion design draft must use this exact Markdown block format. Do 
 运动：ease-out，卡片入场 10 帧，项目名 4 帧后高亮，语言条 14 帧内依次增长。
 布局：放在人物指向位置附近或右侧安全区，不挡脸、嘴、字幕；语言条保持在卡片底部。
 卡片材质：深色半透明卡片 + 绿色语义描边 + GitHub 线性图标 + 弱外发光 + 内阴影。
-匹配素材：assets/github-traffic-compass.png，source=filename+visible-text，confidence=exact；解析为 GitHubRepoCard。
+匹配素材：assets/github-code-wahaha-traffic-compass-python68-html22-css10.png，source=filename，confidence=exact；按文件名解析为 GitHubRepoCard。
 手势锚点：pointing/right-drag @ right-safe-zone，confidence=estimated；卡片放在指尖终点外侧 32px。
 已应用的风格约束：使用参考图中的深色卡片、owner/repo 标题结构、Public badge 和语言占比条；不复制会挡脸的大尺寸。
 字体：Inter Black / Source Han Sans Heavy，title 34-44px，meta 22-28px，mono/language 20-26px。
@@ -525,7 +527,8 @@ Never skip these gates:
 - Do not generate flat single-layer cards. Cards need glass material, gradient, semantic border, inner/outer shadows, icon container, and explicit typography hierarchy.
 - Do not use unselected optional styles. Default to `Remotion Native Material Cards`; use `Holographic Glass HUD`, `Frosted Glass Packaging`, or `Reference HUD Pattern` only when explicitly selected.
 - Do not ignore reference image(s) when the user provides them as the custom style source; extract a style brief first.
-- Do not ignore user-provided content assets. If an asset name, label, visible text, or alias matches a subtitle keyword, use it at that keyword cue or explicitly explain why it is unsafe or unsuitable.
+- Do not ignore current-project content assets. If an asset filename, path segment, or filename-token alias matches a subtitle keyword, use it at that keyword cue or explicitly explain why it is unsafe or unsuitable. Do not use image content, OCR, labels inferred from pixels, or subject classification for matching.
+- Do not search for packaging assets in the uploaded video's folder by default. Use the current Codex project/workspace as the default asset source; only use the video folder if the user explicitly designates it as an asset source.
 - Do not place gesture-driven assets in a generic center position. If pointing, dragging, swiping, circling, or line-drawing gestures are visible, use the gesture region as the preferred placement anchor with a safety offset.
 - Do not silently switch from Remotion + GSAP to another tool when setup is inconvenient.
 - Do not overwrite the original or edited source video.
@@ -542,7 +545,8 @@ Never skip these gates:
 - 不要生成单层扁平卡片。卡片需要玻璃材质、渐变、语义描边、内外阴影、图标容器和明确字体层级。
 - 不要混用未被选择的可选内置风格。默认使用 `Remotion Native Material Cards / Remotion 原生材质卡片`；只有明确选择时才使用 `Holographic Glass HUD / 全息玻璃 HUD`、`Frosted Glass Packaging / 毛玻璃包装` 或 `Reference HUD Pattern / 参考 HUD 信息图`。
 - 用户提供参考图片作为自定义风格来源时，不要忽略图片；必须先提取风格 brief。
-- 不要忽略用户提供的内容素材。只要素材名称、标签、可见文字或别名匹配字幕关键词，就在该关键词 cue 使用，或明确说明为什么不安全/不适合。
+- 不要忽略当前项目内容素材。只要素材文件名、路径片段或文件名分词别名匹配字幕关键词，就在该关键词 cue 使用，或明确说明为什么不安全/不适合。不要用图片内容、OCR、从像素推断的标签或主体分类做匹配。
+- 不要默认去用户上传视频所在文件夹里找包装素材。默认素材来源是当前 Codex 项目/工作区；只有用户明确指定时，才把视频所在目录当素材来源。
 - 不要把手势触发的素材放到通用居中位置。如果画面中有指、拖、划、圈选或画线手势，优先使用手势区域作为放置锚点，并做安全偏移。
 - 不要因为环境麻烦就偷偷换掉 Remotion + GSAP。
 - 不要覆盖原始视频或剪辑后源视频。
